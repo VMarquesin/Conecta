@@ -1,0 +1,8 @@
+<div class="container">
+  <div *ngFor="let prestador of prestadores" class="prestador-card">
+    <h4>{{ prestador.nomeCompleto }}</h4>
+    <p class="fantasia">{{ prestador.nomeFantasia || 'Não informado' }}</p>
+    <p>{{ prestador.bio || 'Sem biografia.' }}</p>
+    <p class="email">Contato: {{ prestador.email }}</p>
+  </div>
+</div>
