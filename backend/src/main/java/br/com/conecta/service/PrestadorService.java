@@ -5,16 +5,17 @@ import br.com.conecta.dto.TelefoneDTO;
 import br.com.conecta.entity.Categoria;
 import br.com.conecta.entity.Prestador;
 import br.com.conecta.entity.Telefone;
+import br.com.conecta.exception.ResourceNotFoundException; // A importação correta
 import br.com.conecta.repository.CategoriaRepository;
 import br.com.conecta.repository.PrestadorRepository;
 import br.com.conecta.repository.TelefoneRepository;
-import br.com.conecta.exception.ResourceNotFoundException;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
-
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional; // Adicione esta importação
 
 @Service
 public class PrestadorService {
@@ -27,9 +28,45 @@ public class PrestadorService {
 
     @Autowired
     private TelefoneRepository telefoneRepository;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public List<Prestador> listarTodos() {
         return prestadorRepository.findAll();
+    }
+
+    // --- MÉTODOS FALTANTES PARA PRESTADOR ---
+    
+    public Optional<Prestador> buscarPorId(Integer id) {
+        return prestadorRepository.findById(id);
+    }
+    
+    @Transactional
+    public Prestador atualizar(Integer id, PrestadorDTO prestadorDTO) {
+        Prestador prestadorExistente = prestadorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Prestador não encontrado com id: " + id));
+
+        prestadorExistente.setNomeCompleto(prestadorDTO.getNomeCompleto());
+        prestadorExistente.setNomeFantasia(prestadorDTO.getNomeFantasia());
+        prestadorExistente.setEmail(prestadorDTO.getEmail());
+        prestadorExistente.setBio(prestadorDTO.getBio());
+        prestadorExistente.setFotoPerfilUrl(prestadorDTO.getFotoPerfilUrl());
+        prestadorExistente.setCpf(prestadorDTO.getCpf());
+        
+        if (prestadorDTO.getSenha() != null && !prestadorDTO.getSenha().isEmpty()) {
+            prestadorExistente.setSenhaHash(prestadorDTO.getSenha());
+        }
+
+        return prestadorRepository.save(prestadorExistente);
+    }
+
+    @Transactional
+    public void deletar(Integer id) {
+        if (!prestadorRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Prestador não encontrado com id: " + id);
+        }
+        prestadorRepository.deleteById(id);
     }
 
     @Transactional
@@ -94,7 +131,10 @@ public class PrestadorService {
     prestador.setSenhaHash(prestadorDTO.getSenha());
     prestador.setBio(prestadorDTO.getBio());
     prestador.setFotoPerfilUrl(prestadorDTO.getFotoPerfilUrl());
-    prestador.setCpf(prestadorDTO.getCpf());
+    String senhaCriptografada = passwordEncoder.encode(prestadorDTO.getSenha());
+        prestador.setSenhaHash(senhaCriptografada);
+
+        prestador.setCpf(prestadorDTO.getCpf());
 
     // 2. Associa as categorias usando nosso novo método auxiliar
         if (prestadorDTO.getCategoriaIds() != null && !prestadorDTO.getCategoriaIds().isEmpty()) {
@@ -107,7 +147,7 @@ public class PrestadorService {
     }
     
     // 3. Salva E FORÇA A SINCRONIZAÇÃO com o banco de dados.
-    return prestadorRepository.saveAndFlush(prestador); // <-- ALTERAÇÃO AQUI
+    return prestadorRepository.saveAndFlush(prestador);
     }
 
     // --- Lógica do Relacionamento ---

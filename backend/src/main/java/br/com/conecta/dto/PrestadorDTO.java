@@ -1,15 +1,27 @@
 package br.com.conecta.dto;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 
 // Esta classe não tem anotações do JPA. É uma classe Java simples.
 public class PrestadorDTO {
 
+    @NotBlank(message = "O nome completo não pode estar em branco.")
     private String nomeCompleto;
     private String nomeFantasia;
+
+    @NotBlank(message = "O email não pode estar em branco.")
+    @Email(message = "O formato do email é inválido.")
     private String email;
-    private String senha; // Recebemos a senha em texto plano, vamos criptografar no service
+
+    @NotBlank(message = "A senha não pode estar em branco.")
+    @Size(min = 6, message = "A senha deve ter no mínimo 6 caracteres.")
+    private String senha; 
     private String bio;
     private String fotoPerfilUrl;
+    @NotBlank(message = "O CPF não pode estar em branco.")
     private String cpf;
     private List<Integer> categoriaIds;
 

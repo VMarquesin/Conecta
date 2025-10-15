@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import br.com.conecta.dto.ClienteResponseDTO;
 import br.com.conecta.exception.ResourceNotFoundException; 
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,9 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Transactional(readOnly = true)
     public Optional<ClienteResponseDTO> buscarPorId(Integer id) {
         return clienteRepository.findById(id).map(ClienteResponseDTO::new);
@@ -36,7 +40,10 @@ public class ClienteService {
         Cliente cliente = new Cliente();
         cliente.setNomeCompleto(clienteDTO.getNomeCompleto());
         cliente.setEmail(clienteDTO.getEmail());
-        cliente.setSenhaHash(clienteDTO.getSenha()); // Simplificado: sem criptografia por enquanto
+        // Criptografa a senha antes de salvar
+        String senhaCriptografada = passwordEncoder.encode(clienteDTO.getSenha());
+        cliente.setSenhaHash(senhaCriptografada);
+        
         cliente.setCpf(clienteDTO.getCpf());
         return clienteRepository.save(cliente);
     }

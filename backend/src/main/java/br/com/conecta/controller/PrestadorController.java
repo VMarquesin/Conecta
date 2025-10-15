@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import br.com.conecta.entity.Telefone;
 import br.com.conecta.dto.TelefoneDTO;
+
 import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/prestadores")
@@ -24,10 +26,30 @@ public class PrestadorController {
         return prestadorService.listarTodos();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Prestador> buscarPorId(@PathVariable Integer id) {
+        return prestadorService.buscarPorId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping
     public ResponseEntity<Prestador> salvar(@RequestBody PrestadorDTO prestadorDTO) {
         Prestador prestadorSalvo = prestadorService.salvar(prestadorDTO);
         return ResponseEntity.ok(prestadorSalvo);
+    }
+
+       @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
+        prestadorService.deletar(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Prestador> atualizar(@PathVariable Integer id, @Valid @RequestBody PrestadorDTO prestadorDTO) {
+        // A exceção ResourceNotFoundException será capturada pelo nosso GlobalExceptionHandler
+        Prestador prestadorAtualizado = prestadorService.atualizar(id, prestadorDTO);
+        return ResponseEntity.ok(prestadorAtualizado);
     }
     
     // Endpoint para associar uma categoria a um prestador
