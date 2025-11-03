@@ -12,25 +12,26 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // Este @Bean cria um objeto "PasswordEncoder" que fica disponível para toda a aplicação.
-    // Estamos dizendo ao Spring: "Sempre que alguém pedir um PasswordEncoder,
-    // entregue esta instância do BCryptPasswordEncoder".
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // Este @Bean define a cadeia de filtros de segurança.
-    // Por enquanto, estamos configurando para PERMITIR TODAS as requisições,
-    // para não travar nossa API enquanto desenvolvemos.
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // Desabilita a proteção CSRF, que não é necessária para APIs stateless.
             .csrf(csrf -> csrf.disable())
-            // Define as regras de autorização.
+            
+            // --- ADICIONE ESTAS 3 LINHAS ABAIXO ---
+            // Isso permite que o H2 Console seja renderizado em um frame
+            .headers(headers -> headers
+                .frameOptions(frameOptions -> frameOptions.sameOrigin())
+            )
+            
             .authorizeHttpRequests(auth -> auth
-                // Permite que qualquer requisição seja acessada sem autenticação.
+                // Permite que o H2 Console seja acessado
+                .requestMatchers("/h2-console/**").permitAll() 
+                // Mantém nossas regras existentes
                 .anyRequest().permitAll()
             );
         return http.build();

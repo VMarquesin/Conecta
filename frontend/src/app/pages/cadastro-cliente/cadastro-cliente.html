@@ -1,0 +1,49 @@
+<div class="form-container">
+  <h2>Cadastro de Cliente</h2>
+
+  <form [formGroup]="cadastroForm" (ngSubmit)="onSubmit()">
+    
+    <div class="form-group">
+      <label for="nomeCompleto">Nome Completo</label>
+      <input id="nomeCompleto" type="text" formControlName="nomeCompleto">
+      
+      <div *ngIf="cadastroForm.get('nomeCompleto')?.invalid && cadastroForm.get('nomeCompleto')?.touched" class="error-message">
+        Nome é obrigatório.
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input id="email" type="email" formControlName="email">
+      
+      <div *ngIf="cadastroForm.get('email')?.invalid && cadastroForm.get('email')?.touched" class="error-message">
+        Email é obrigatório e precisa ser válido.
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="senha">Senha</label>
+      <input id="senha" type="password" formControlName="senha">
+      
+      <div *ngIf="cadastroForm.get('senha')?.invalid && cadastroForm.get('senha')?.touched" class="error-message">
+        Senha é obrigatória (mínimo 6 caracteres).
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="cpf">CPF</label>
+      <input id="cpf" type="text" formControlName="cpf">
+      
+      <div *ngIf="cadastroForm.get('cpf')?.invalid && cadastroForm.get('cpf')?.touched" class="error-message">
+        CPF é obrigatório.
+      </div>
+    </div>
+    
+    <button type="submit" [disabled]="cadastroForm.invalid">Cadastrar</button>
+
+    <div *ngIf="mensagemSucesso" class="success-message">
+      {{ mensagemSucesso }}
+    </div>
+
+  </form>
+</div>

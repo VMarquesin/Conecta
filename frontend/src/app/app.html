@@ -1,3 +1,13 @@
-<app-prestador-list></app-prestador-list>
-
 <router-outlet></router-outlet>
+
+<nav class="navbar">
+  <a routerLink="/">Conecta</a>
+  <ul class="nav-links">
+    <li><a routerLink="/cadastro">Cadastrar Cliente</a></li>
+    <li><a routerLink="/cadastro-prestador">Cadastrar Prestador</a></li>
+    </ul>
+</nav>
+
+<div class="content">
+  <router-outlet></router-outlet>
+</div>
