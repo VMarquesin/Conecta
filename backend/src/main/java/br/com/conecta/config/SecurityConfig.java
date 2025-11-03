@@ -1,9 +1,16 @@
 package br.com.conecta.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import br.com.conecta.security.JwtAuthorizationFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -12,28 +19,49 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Autowired
+    private JwtAuthorizationFilter jwtAuthorizationFilter;
+
+    // O Spring vai encontrar seu PasswordEncoder
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
+    }
+
+    @Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .csrf(csrf -> csrf.disable())
+        .headers(headers -> headers
+            .frameOptions(frameOptions -> frameOptions.sameOrigin())
+        )
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        
+        .authorizeHttpRequests(auth -> auth
+            // 1. Liberação de rotas de AUTENTICAÇÃO e CADASTRO
+            .requestMatchers("/api/auth/login").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/prestadores").permitAll()
             
-            // --- ADICIONE ESTAS 3 LINHAS ABAIXO ---
-            // Isso permite que o H2 Console seja renderizado em um frame
-            .headers(headers -> headers
-                .frameOptions(frameOptions -> frameOptions.sameOrigin())
-            )
+            // 2. Liberação de rotas de LEITURA PÚBLICA (GET)
+            .requestMatchers(HttpMethod.GET, "/api/categorias").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/prestadores/**").permitAll() // <-- ESTA REGRA ÚNICA libera tanto "/api/prestadores" quanto "/api/prestadores/1"
+            .requestMatchers(HttpMethod.GET, "/api/prestadores/{prestadorId}/publicacoes").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/prestadores/{prestadorId}/avaliacoes").permitAll()
             
-            .authorizeHttpRequests(auth -> auth
-                // Permite que o H2 Console seja acessado
-                .requestMatchers("/h2-console/**").permitAll() 
-                // Mantém nossas regras existentes
-                .anyRequest().permitAll()
-            );
-        return http.build();
+            // 3. Liberação do H2 Console
+            .requestMatchers("/h2-console/**").permitAll()
+            
+            // 4. QUALQUER OUTRA COISA (PUT, DELETE, etc.) exige autenticação
+            .anyRequest().authenticated()
+        )
+        .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
+        
+    return http.build();
     }
 }

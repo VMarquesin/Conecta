@@ -8,10 +8,10 @@
 		<version>3.5.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.example</groupId>
-	<artifactId>demo</artifactId>
+	<groupId>br.com.conecta</groupId>
+	<artifactId>backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>demo</name>
+	<name>conecta-backend</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
@@ -71,24 +71,25 @@
     		<groupId>org.springframework.boot</groupId>
     		<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
+		<dependency>
+		<groupId>io.jsonwebtoken</groupId>
+		<artifactId>jjwt-api</artifactId>
+		<version>0.12.5</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.12.5</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.12.5</version>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
-	<dependency>
-    <groupId>io.jsonwebtoken</groupId>
-    <artifactId>jjwt-api</artifactId>
-    <version>0.12.5</version>
-	</dependency>
-	<dependency>
-		<groupId>io.jsonwebtoken</groupId>
-		<artifactId>jjwt-impl</artifactId>
-		<version>0.12.5</version>
-		<scope>runtime</scope>
-	</dependency>
-	<dependency>
-		<groupId>io.jsonwebtoken</groupId>
-		<artifactId>jjwt-jackson</artifactId>
-		<version>0.12.5</version>
-		<scope>runtime</scope>
-	</dependency>
+	
 
 	
 
