@@ -33,11 +33,11 @@ public class JwtTokenService {
         Date expiryDate = new Date(now.getTime() + jwtExpiration);
 
         return Jwts.builder()
-                .subject(userDetails.getUsername()) // Define o "dono" do token (nosso email)
-                .issuedAt(now) // Data de criação
-                .expiration(expiryDate) // Data de expiração
-                .signWith(getSigningKey()) // Assina com a nossa chave secreta
-                .compact(); // Constrói o token como uma string
+                .subject(userDetails.getUsername())
+                .issuedAt(now) 
+                .expiration(expiryDate) 
+                .signWith(getSigningKey())
+                .compact(); 
     }
 
     public String getUsernameFromToken(String token) {

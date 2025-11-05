@@ -11,13 +11,11 @@ public class AvaliacaoResponseDTO {
     private LocalDateTime dataAvaliacao;
     private String nomeCliente;
 
-    // Construtor que converte a Entidade para o DTO
     public AvaliacaoResponseDTO(Avaliacao avaliacao) {
         this.id = avaliacao.getId();
         this.nota = avaliacao.getNota();
         this.comentario = avaliacao.getComentario();
         this.dataAvaliacao = avaliacao.getDataAvaliacao();
-        // Acessamos o nome do cliente aqui, enquanto a sessão está ativa
         this.nomeCliente = avaliacao.getCliente().getNomeCompleto();
     }
 

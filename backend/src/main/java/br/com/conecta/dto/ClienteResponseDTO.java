@@ -11,7 +11,7 @@ public class ClienteResponseDTO {
     private String cpf;
     private LocalDateTime dataCadastro;
 
-    // Construtor que converte a Entidade para este DTO
+    // Construtor Entidade para DTO
     public ClienteResponseDTO(Cliente cliente) {
         this.id = cliente.getId();
         this.nomeCompleto = cliente.getNomeCompleto();

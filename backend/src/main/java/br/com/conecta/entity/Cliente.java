@@ -77,8 +77,7 @@ public class Cliente {
     public void setDataCadastro(LocalDateTime dataCadastro) {
         this.dataCadastro = dataCadastro;
     }
-
-    // equals() e hashCode() baseados no ID
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

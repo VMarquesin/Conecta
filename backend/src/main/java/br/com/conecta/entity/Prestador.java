@@ -16,7 +16,7 @@ public class Prestador {
     private Integer id;
 
     @Column(nullable = false)
-    private String nomeCompleto; // Note: Usamos camelCase em Java (nome_completo -> nomeCompleto)
+    private String nomeCompleto; 
 
     private String nomeFantasia;
 
@@ -34,7 +34,7 @@ public class Prestador {
     @Column(unique = true, length = 14)
     private String cpf;
 
-    @CreationTimestamp // Mágica do Hibernate: preenche a data/hora no momento da criação
+    @CreationTimestamp // Hibernate: preenche a data/hora no momento da criação
     @Column(nullable = false, updatable = false)
     private LocalDateTime dataCadastro;
 
@@ -50,14 +50,13 @@ public class Prestador {
         })
 
     @JoinTable(
-        name = "prestador_categorias", // Nome da tabela de junção que você definiu
-        joinColumns = @JoinColumn(name = "prestador_id"), // Chave estrangeira para Prestador
-        inverseJoinColumns = @JoinColumn(name = "categoria_id") // Chave estrangeira para Categoria
+        name = "prestador_categorias", 
+        joinColumns = @JoinColumn(name = "prestador_id"), 
+        inverseJoinColumns = @JoinColumn(name = "categoria_id") 
     )
     private Set<Categoria> categorias = new HashSet<>();
 
     // --- Getters e Setters ---
-    // (Sua IDE pode gerar isso para você: Botão direito -> Source Action -> Generate Getters and Setters)
 
     public Integer getId() {
         return id;
@@ -145,7 +144,6 @@ public class Prestador {
     public void setPublicacoes(Set<Publicacao> publicacoes) {
         this.publicacoes = publicacoes;
     }
-    // Adicione também o Getter e Setter para 'categorias'
     public Set<Categoria> getCategorias() {
         return categorias;
     }

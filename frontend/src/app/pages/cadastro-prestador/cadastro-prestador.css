@@ -29,7 +29,7 @@
   padding: 0.75rem;
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-sizing: border-box; /* Garante que o padding não estoure a largura */
+  box-sizing: border-box; 
 }
 .checkbox-group {
   display: flex;

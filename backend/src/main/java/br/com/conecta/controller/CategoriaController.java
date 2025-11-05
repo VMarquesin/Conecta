@@ -25,17 +25,15 @@ public class CategoriaController {
         return ResponseEntity.ok(categoriaSalva);
     }
 
-    // --- NOVOS ENDPOINTS ABAIXO ---
 
     /**
-     * READ (by ID)
      * Ex: GET http://localhost:8080/api/categorias/1
      */
     @GetMapping("/{id}")
     public ResponseEntity<Categoria> buscarPorId(@PathVariable Integer id) {
         return categoriaService.buscarPorId(id)
-                .map(categoria -> ResponseEntity.ok(categoria)) // Se encontrar, retorna 200 OK com o objeto
-                .orElse(ResponseEntity.notFound().build());    // Se não encontrar, retorna 404 Not Found
+                .map(categoria -> ResponseEntity.ok(categoria)) 
+                .orElse(ResponseEntity.notFound().build());    
     }
 
     /**
@@ -60,7 +58,7 @@ public class CategoriaController {
     public ResponseEntity<Void> deletar(@PathVariable Integer id) {
         try {
             categoriaService.deletar(id);
-            return ResponseEntity.noContent().build(); // Retorna 204 No Content, indicando sucesso sem conteúdo.
+            return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }

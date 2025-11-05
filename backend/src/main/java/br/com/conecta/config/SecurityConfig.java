@@ -22,7 +22,6 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthorizationFilter jwtAuthorizationFilter;
 
-    // O Spring vai encontrar seu PasswordEncoder
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -43,21 +42,21 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         
         .authorizeHttpRequests(auth -> auth
-            // 1. Liberação de rotas de AUTENTICAÇÃO e CADASTRO
+            // AUTENTICAÇÃO e CADASTRO
             .requestMatchers("/api/auth/login").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/prestadores").permitAll()
             
-            // 2. Liberação de rotas de LEITURA PÚBLICA (GET)
+            // LEITURA PÚBLICA (GET)
             .requestMatchers(HttpMethod.GET, "/api/categorias").permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/prestadores/**").permitAll() // <-- ESTA REGRA ÚNICA libera tanto "/api/prestadores" quanto "/api/prestadores/1"
+            .requestMatchers(HttpMethod.GET, "/api/prestadores/**").permitAll() 
             .requestMatchers(HttpMethod.GET, "/api/prestadores/{prestadorId}/publicacoes").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/prestadores/{prestadorId}/avaliacoes").permitAll()
             
-            // 3. Liberação do H2 Console
+            // H2 Console
             .requestMatchers("/h2-console/**").permitAll()
             
-            // 4. QUALQUER OUTRA COISA (PUT, DELETE, etc.) exige autenticação
+            // (PUT, DELETE, etc.) exige autenticação
             .anyRequest().authenticated()
         )
         .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);

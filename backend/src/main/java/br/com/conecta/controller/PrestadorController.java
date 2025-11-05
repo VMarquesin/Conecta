@@ -47,12 +47,10 @@ public class PrestadorController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Prestador> atualizar(@PathVariable Integer id, @Valid @RequestBody PrestadorDTO prestadorDTO) {
-        // A exceção ResourceNotFoundException será capturada pelo nosso GlobalExceptionHandler
         Prestador prestadorAtualizado = prestadorService.atualizar(id, prestadorDTO);
         return ResponseEntity.ok(prestadorAtualizado);
     }
     
-    // Endpoint para associar uma categoria a um prestador
     @PostMapping("/{prestadorId}/telefones")
     public ResponseEntity<Prestador> adicionarTelefone(@PathVariable Integer prestadorId, @RequestBody TelefoneDTO telefoneDTO) {
         try {
@@ -71,7 +69,6 @@ public class PrestadorController {
             Telefone telefoneAtualizado = prestadorService.atualizarTelefone(prestadorId, telefoneId, telefoneDTO);
             return ResponseEntity.ok(telefoneAtualizado);
         } catch (RuntimeException e) {
-            // Retorna notFound para IDs não encontrados ou badRequest para a validação de segurança
             return ResponseEntity.badRequest().body(null);
         }
     }

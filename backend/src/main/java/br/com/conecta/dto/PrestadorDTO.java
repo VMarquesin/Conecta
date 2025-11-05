@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 
-// Esta classe não tem anotações do JPA. É uma classe Java simples.
 public class PrestadorDTO {
 
     @NotBlank(message = "O nome completo não pode estar em branco.")
@@ -25,9 +24,7 @@ public class PrestadorDTO {
     private String cpf;
     private List<Integer> categoriaIds;
 
-    // Gere os Getters e Setters para todos os campos
-    // (Botão direito -> Source Action -> Generate Getters and Setters)
-
+    // Getters e Setters 
     public String getNomeCompleto() { return nomeCompleto; }
     public void setNomeCompleto(String nomeCompleto) { this.nomeCompleto = nomeCompleto; }
     public String getNomeFantasia() { return nomeFantasia; }

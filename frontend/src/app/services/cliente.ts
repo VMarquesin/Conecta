@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-// Interface para os dados que vamos enviar (corresponde ao nosso ClienteDTO)
+
 export interface ClienteDTO {
   nomeCompleto: string;
   email: string;

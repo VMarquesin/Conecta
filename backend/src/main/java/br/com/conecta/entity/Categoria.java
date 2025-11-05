@@ -8,9 +8,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore; // Adicione esta importação
-import java.util.HashSet; // Adicione esta importação
-import java.util.Set;    // Adicione esta importação
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.HashSet; 
+import java.util.Set;    
 
 @Entity
 @Table(name = "categorias")
@@ -18,16 +18,16 @@ public class Categoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id; // Usando Integer como no seu modelo (id INT)
+    private Integer id; 
 
     @Column(unique = true, nullable = false, length = 100)
     private String nome;
 
-    @Column(columnDefinition = "TEXT") // Para campos TEXT
+    @Column(columnDefinition = "TEXT")
     private String descricao;
 
-    @ManyToMany(mappedBy = "categorias") // 'mappedBy' aponta para o nome do campo na classe Prestador
-    @JsonIgnore // Evita loops infinitos ao converter para JSON
+    @ManyToMany(mappedBy = "categorias") 
+    @JsonIgnore 
     private Set<Prestador> prestadores = new HashSet<>();
 
     // Getters e Setters
@@ -54,7 +54,7 @@ public class Categoria {
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
-    // Adicione também o Getter e Setter para 'prestadores'
+    
     public Set<Prestador> getPrestadores() {
         return prestadores;
     }

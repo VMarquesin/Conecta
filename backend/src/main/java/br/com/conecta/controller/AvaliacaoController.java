@@ -45,8 +45,6 @@ public class AvaliacaoController {
         }
     }
 
-    // Para deletar, o cliente precisa se identificar. Uma forma simples é passar o ID dele.
-    // Ex: DELETE /api/prestadores/1/avaliacoes/1?clienteId=1
     @DeleteMapping("/{avaliacaoId}")
     public ResponseEntity<Void> deletar(@PathVariable Integer prestadorId,
                                         @PathVariable Integer avaliacaoId,

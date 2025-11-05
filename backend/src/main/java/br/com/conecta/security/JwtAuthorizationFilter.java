@@ -33,45 +33,45 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         try {
-            // 1. Pega o token do cabeçalho da requisição
+            // Pega o token do cabeçalho da requisição
             String jwt = getJwtFromRequest(request);
 
-            // 2. Valida o token
+            // Valida o token
             if (StringUtils.hasText(jwt) && jwtTokenService.validateToken(jwt)) {
                 
-                // 3. Se for válido, extrai o email
+                // Se for válido, extrai o email
                 String email = jwtTokenService.getUsernameFromToken(jwt);
                 
-                // 4. Carrega os dados do usuário do banco
+                // Carrega os dados do usuário do banco
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
                 
-                // 5. Cria um objeto de "Autenticação" do Spring Security
+                // Cria um objeto de autenticação do Spring Security
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // 6. Define o usuário como "logado" para esta requisição
+                // Define o usuário como logado para esta requisição
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception ex) {
-            // Se algo der errado (token inválido, etc.), apenas registramos o erro
+            // Se algo der errado (token inválido, etc.), registra o erro
             logger.error("Não foi possível definir a autenticação do usuário", ex);
         }
 
-        // 7. Passa a requisição para o próximo filtro na cadeia
+        // Passa a requisição para o próximo filtro
         filterChain.doFilter(request, response);
     }
 
     /**
-     * Método auxiliar para extrair o Token do cabeçalho "Authorization".
+     * Método auxiliar para extrair o Token "Authorization".
      */
     private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         
-        // O cabeçalho deve ser assim: "Bearer [token]"
+        // O cabeçalho deve ser: "Bearer [token]"
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7); // Retorna apenas a string do token
+            return bearerToken.substring(7); 
         }
         return null;
     }
