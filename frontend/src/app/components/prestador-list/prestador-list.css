@@ -1,0 +1,4 @@
+.prestador-card-link {
+  text-decoration: none;
+  color: inherit; /* Herda a cor do texto normal */
+}

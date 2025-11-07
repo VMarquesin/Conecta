@@ -1,0 +1,54 @@
+</div>
+  </div>
+
+  <div class="section form-container">
+    <h3>Deixe sua Avaliação</h3>
+
+    @if (isLoggedIn$ | async) {
+      
+      <form [formGroup]="avaliacaoForm" (ngSubmit)="onPostarAvaliacao()">
+        
+        <div class="form-group">
+          <label for="nota">Nota (de 1 a 5)</label>
+          <select id="nota" formControlName="nota">
+            <option value="5">5 Estrelas</option>
+            <option value="4">4 Estrelas</option>
+            <option value="3">3 Estrelas</option>
+            <option value="2">2 Estrelas</option>
+            <option value="1">1 Estrela</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="comentario">Comentário</label>
+          <textarea id="comentario" formControlName="comentario" rows="4"></textarea>
+          @if (avaliacaoForm.get('comentario')?.invalid && avaliacaoForm.get('comentario')?.touched) {
+            <div class="error-message">Comentário é obrigatório.</div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="clienteId">Seu ID de Cliente (para teste)</label>
+          <input id="clienteId" type="number" formControlName="clienteId">
+          @if (avaliacaoForm.get('clienteId')?.invalid && avaliacaoForm.get('clienteId')?.touched) {
+            <div class="error-message">Seu ID de cliente é obrigatório.</div>
+          }
+        </div>
+
+        <button typeS="submit" [disabled]="avaliacaoForm.invalid">Postar Avaliação</button>
+        
+        @if (mensagemSucesso) {
+          <div class="success-message">{{ mensagemSucesso }}</div>
+        }
+      </form>
+
+    } @else {
+      <p>
+        Você precisa estar logado para deixar uma avaliação. 
+        <a routerLink="/login">Faça o login aqui.</a>
+      </p>
+    }
+
+  </div>
+  
+</div> ```

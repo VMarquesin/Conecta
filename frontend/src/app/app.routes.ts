@@ -3,10 +3,12 @@ import { CadastroClienteComponent } from './pages/cadastro-cliente/cadastro-clie
 import { CadastroPrestadorComponent } from './pages/cadastro-prestador/cadastro-prestador';
 import { PrestadorListComponent } from './components/prestador-list/prestador-list';
 import { LoginComponent } from './pages/login/login';
+import { PrestadorDetailComponent } from './pages/prestador-detail/prestador-detail';
 
 export const routes: Routes = [
     { path: '', component: PrestadorListComponent, pathMatch: 'full' },
     { path: 'cadastro', component: CadastroClienteComponent },
     { path: 'cadastro-prestador', component: CadastroPrestadorComponent },
-    { path: 'login', component: LoginComponent }
+    { path: 'login', component: LoginComponent },
+    { path: 'prestador/:id', component: PrestadorDetailComponent }
 ];

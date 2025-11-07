@@ -1,8 +1,19 @@
 <div class="container">
-  <div *ngFor="let prestador of prestadores" class="prestador-card">
-    <h4>{{ prestador.nomeCompleto }}</h4>
-    <p class="fantasia">{{ prestador.nomeFantasia || 'Não informado' }}</p>
-    <p>{{ prestador.bio || 'Sem biografia.' }}</p>
-    <p class="email">Contato: {{ prestador.email }}</p>
-  </div>
+  
+  @for (prestador of prestadores; track prestador.id) {
+    
+    <a [routerLink]="['/prestador', prestador.id]" class="prestador-card-link">
+      
+      <div class="prestador-card">
+        <h4>{{ prestador.nomeCompleto }}</h4>
+        <p class="fantasia">{{ prestador.nomeFantasia || 'Não informado' }}</p>
+        <p>{{ prestador.bio || 'Sem biografia.' }}</p>
+        <p class="email">Contato: {{ prestador.email }}</p>
+      </div>
+
+    </a>
+  } @empty {
+    <p>Nenhum prestador cadastrado no momento.</p>
+  }
+
 </div>

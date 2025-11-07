@@ -1,9 +1,19 @@
 <nav class="navbar">
   <a routerLink="/">Conecta</a>
+
   <ul class="nav-links">
-    <li><a routerLink="/cadastro">Cadastrar Cliente</a></li>
-    <li><a routerLink="/cadastro-prestador">Cadastrar Prestador</a></li>
-    <li><a routerLink="/login" class="login-link">Login</a></li>
+    
+    @if (isLoggedIn$ | async) {
+      <li><a routerLink="/perfil">Meu Perfil</a></li> 
+      <li>
+        <a (click)="onLogout()" style="cursor: pointer;">Logout</a>
+      </li>
+    } @else {
+      <li><a routerLink="/cadastro">Cadastrar Cliente</a></li>
+      <li><a routerLink="/cadastro-prestador">Cadastrar Prestador</a></li>
+      <li><a routerLink="/login" class="login-link">Login</a></li>
+    }
+
   </ul>
 </nav>
 
