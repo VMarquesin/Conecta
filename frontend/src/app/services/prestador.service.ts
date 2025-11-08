@@ -9,8 +9,8 @@ export interface Prestador {
   nomeCompleto: string;
   nomeFantasia: string;
   email: string;
+  telefoneNumero?: string;
   bio: string;
-  // adicione outros campos que a API retorna
 }
 
 // Interface para o DTO de cadastro
@@ -19,6 +19,8 @@ export interface PrestadorDTO {
   email: string;
   senha: string;
   cpf: string;
+  telefoneNumero?: string;
+  isWhatsapp?: boolean;
   nomeFantasia?: string;
   bio?: string;
   categoriaIds?: number[];
@@ -43,13 +45,12 @@ export interface AvaliacaoResponse {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PrestadorService {
-
   private apiUrl = 'http://localhost:8080/api/prestadores';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   // 2. O MÉTODO 'getPrestadores' QUE ESTAVA FALTANDO
   getPrestadores(): Observable<Prestador[]> {

@@ -24,6 +24,9 @@ public class PrestadorDTO {
     private String cpf;
     private List<Integer> categoriaIds;
 
+    private String telefoneNumero;
+    private Boolean isWhatsapp;
+
     // Getters e Setters 
     public String getNomeCompleto() { return nomeCompleto; }
     public void setNomeCompleto(String nomeCompleto) { this.nomeCompleto = nomeCompleto; }
@@ -45,5 +48,18 @@ public class PrestadorDTO {
 
     public void setCategoriaIds(List<Integer> categoriaIds) {
         this.categoriaIds = categoriaIds;
+    }
+
+    public String getTelefoneNumero() {
+        return telefoneNumero;
+    }
+    public void setTelefoneNumero(String telefoneNumero) {
+        this.telefoneNumero = telefoneNumero;
+    }
+    public Boolean getIsWhatsapp() {
+        return isWhatsapp;
+    }
+    public void setIsWhatsapp(Boolean isWhatsapp) {
+        this.isWhatsapp = isWhatsapp;
     }
 }

@@ -34,6 +34,8 @@ export class CadastroPrestadorComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       senha: ['', [Validators.required, Validators.minLength(6)]],
       cpf: ['', Validators.required],
+      telefoneNumero: ['', Validators.required],
+      isWhatsapp: [false],
       bio: [''],
       categoriaIds: this.fb.array([]),
     });
@@ -41,8 +43,8 @@ export class CadastroPrestadorComponent implements OnInit {
 
   ngOnInit(): void {
     this.categoriaService.listar().subscribe((categoriasDaApi) => {
-      this.categorias = categoriasDaApi; 
-      this.atualizarCheckboxesDasCategorias(); 
+      this.categorias = categoriasDaApi;
+      this.atualizarCheckboxesDasCategorias();
     });
   }
 
@@ -70,7 +72,9 @@ export class CadastroPrestadorComponent implements OnInit {
         senha: formValues.senha,
         cpf: formValues.cpf,
         bio: formValues.bio,
-        categoriaIds: selectedCategoriaIds, 
+        categoriaIds: selectedCategoriaIds,
+        telefoneNumero: formValues.telefoneNumero,
+        isWhatsapp: formValues.isWhatsapp,
       };
 
       this.prestadorService.salvar(prestadorDTO).subscribe({

@@ -33,35 +33,39 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .headers(headers -> headers
-                .frameOptions(frameOptions -> frameOptions.sameOrigin())
-            )
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .csrf(csrf -> csrf.disable())
+        .headers(headers -> headers
+            .frameOptions(frameOptions -> frameOptions.sameOrigin())
+        )
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        
+        .authorizeHttpRequests(auth -> auth
+            // Liberação de rotas de AUTENTICAÇÃO e CADASTRO
+            .requestMatchers("/api/auth/login").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
+            // .requestMatchers(HttpMethod.POST, "/api/prestadores").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/categorias").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/prestadores/{prestadorId}/publicacoes").permitAll()
+            .requestMatchers("/api/prestadores").permitAll()
             
-            .authorizeHttpRequests(auth -> auth
-                // 1. ADICIONE ESTA LINHA NO TOPO
-                // Libera todas as requisições "preflight" OPTIONS
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                
-                // --- O resto das suas regras ... ---
-                .requestMatchers("/api/auth/login").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/prestadores").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/categorias").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/prestadores/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/clientes/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/prestadores/{prestadorId}/publicacoes").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/prestadores/{prestadorId}/avaliacoes").permitAll()
-                .requestMatchers("/h2-console/**").permitAll()
-                
-                // O RESTO exige autenticação
-                .anyRequest().authenticated()
-            )
-            .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
+            // Liberação de rotas de LEITURA PÚBLICA (GET)
+            .requestMatchers(HttpMethod.GET, "/api/categorias").permitAll()
+            // .requestMatchers(HttpMethod.GET, "/api/prestadores/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/clientes/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/prestadores/{prestadorId}/publicacoes").permitAll()
+            // .requestMatchers(HttpMethod.GET, "/api/prestadores/{prestadorId}/avaliacoes").permitAll() 
+            .requestMatchers("/api/prestadores/{prestadorId}/avaliacoes").permitAll() 
             
-        return http.build();
-    }
+            // Liberação do H2 Console
+            .requestMatchers("/h2-console/**").permitAll()
+            
+            // O RESTO exige autenticação
+            .anyRequest().authenticated()
+        )
+        .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
+        
+    return http.build();
+}
 }
