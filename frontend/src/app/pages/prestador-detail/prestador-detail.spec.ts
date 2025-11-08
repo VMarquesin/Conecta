@@ -1,18 +1,32 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PrestadorDetail } from './prestador-detail';
+// 1. Corrija o nome da classe importada
+import { PrestadorDetailComponent } from './prestador-detail';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 
-describe('PrestadorDetail', () => {
-  let component: PrestadorDetail;
-  let fixture: ComponentFixture<PrestadorDetail>;
+// 2. Corrija o nome no describe
+describe('PrestadorDetailComponent', () => {
+  // 3. Corrija os tipos das variáveis
+  let component: PrestadorDetailComponent;
+  let fixture: ComponentFixture<PrestadorDetailComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PrestadorDetail]
+      // 4. Corrija o nome do componente no imports
+      imports: [PrestadorDetailComponent],
+      // Adicione os providers que o componente precisa
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([]) // Fornece um roteador de teste
+      ]
     })
     .compileComponents();
-
-    fixture = TestBed.createComponent(PrestadorDetail);
+    
+    // 5. Corrija o nome do componente aqui
+    fixture = TestBed.createComponent(PrestadorDetailComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

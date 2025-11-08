@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import org.springframework.security.core.GrantedAuthority;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtTokenService {
@@ -32,12 +34,22 @@ public class JwtTokenService {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpiration);
 
+        // 3. Pega a lista de "papéis" (ex: "ROLE_CLIENTE") do UserDetails
+        String roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(",")); // Converte para uma string, ex: "ROLE_CLIENTE,ROLE_ADMIN"
+
         return Jwts.builder()
                 .subject(userDetails.getUsername())
-                .issuedAt(now) 
-                .expiration(expiryDate) 
+                .issuedAt(now)
+                
+                // 4. ADICIONA A NOVA INFORMAÇÃO (CLAIM)
+                // Estamos "carimbando" o token com os papéis do usuário.
+                .claim("roles", roles) 
+                
+                .expiration(expiryDate)
                 .signWith(getSigningKey())
-                .compact(); 
+                .compact();
     }
 
     public String getUsernameFromToken(String token) {

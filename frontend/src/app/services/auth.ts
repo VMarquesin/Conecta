@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-// 1. Importe BehaviorSubject e Observable
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
+// 1. Importe a biblioteca que acabamos de instalar
+import { jwtDecode } from 'jwt-decode'; 
 
 @Injectable({
   providedIn: 'root'
@@ -12,35 +13,52 @@ export class AuthService {
   private apiUrl = 'http://localhost:8080/api/auth';
   private readonly TOKEN_KEY = 'authToken';
 
-  // 2. O "Anunciante" do Status de Login
-  // BehaviorSubject é um tipo especial de Observable que armazena o último valor
-  // e o "anuncia" para qualquer novo assinante.
-  // Começa como 'false' (usuário não está logado).
-  private loggedIn = new BehaviorSubject<boolean>(this.isLoggedIn());
+  // 2. NOVOS "ANUNCIANTES" (BehaviorSubjects)
+  // Anunciante para o status de login (como antes)
+  private loggedIn = new BehaviorSubject<boolean>(false);
+  // Anunciante para os "papéis" (Roles) do usuário
+  private userRoles = new BehaviorSubject<string[]>([]);
 
-  // 3. Transformamos o "anunciante" em um Observable público
-  // Componentes vão "ouvir" este '$' para saber se o usuário está logado.
+  // 3. OBSERVABLES PÚBLICOS
+  // Componentes vão "ouvir" estes para saber o status
   isLoggedIn$: Observable<boolean> = this.loggedIn.asObservable();
+  userRoles$: Observable<string[]> = this.userRoles.asObservable();
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router) {
+    // 4. VERIFICAÇÃO INICIAL
+    // Quando o serviço carrega, verifique se já existe um token
+    // (isso mantém o usuário logado se ele der F5 na página)
+    this.checkTokenOnLoad();
+  }
 
+  private checkTokenOnLoad(): void {
+    const token = this.getToken();
+    if (token) {
+      this.decodeToken(token); // Decodifica o token e atualiza os "anunciantes"
+    }
+  }
+
+  /**
+   * Faz o login, salva o token e atualiza os anunciantes.
+   */
   login(credentials: { email: string, senha: string }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
         if (response && response.token) {
           localStorage.setItem(this.TOKEN_KEY, response.token);
-          // 4. ANUNCIA A MUDANÇA: O usuário está logado!
-          this.loggedIn.next(true);
+          this.decodeToken(response.token); // Decodifica o novo token
         }
       })
     );
   }
 
+  /**
+   * Faz o logout, limpa o token e reseta os anunciantes.
+   */
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
-    // 5. ANUNCIA A MUDANÇA: O usuário fez logout!
-    this.loggedIn.next(false);
-    // 6. Envia o usuário de volta para a home
+    this.loggedIn.next(false); // Anuncia o logout
+    this.userRoles.next([]);   // Limpa os papéis
     this.router.navigate(['/']);
   }
 
@@ -48,9 +66,32 @@ export class AuthService {
     return localStorage.getItem(this.TOKEN_KEY);
   }
 
-  // A lógica desta função mudou um pouco
   isLoggedIn(): boolean {
-    const token = this.getToken();
-    return !!token; // Continua sendo true se houver um token
+    return this.loggedIn.value; // Retorna o valor atual do anunciante
+  }
+
+  // 5. NOVO MÉTODO: Decodificador de Token
+  private decodeToken(token: string): void {
+    try {
+      // Usa a biblioteca jwt-decode para ler o conteúdo do token
+      const decodedToken: any = jwtDecode(token);
+      
+      // Busca o "carimbo" de papéis (roles) que colocamos no backend
+      const roles = decodedToken.roles ? decodedToken.roles.split(',') : [];
+      
+      // Atualiza os anunciantes
+      this.userRoles.next(roles);
+      this.loggedIn.next(true);
+
+    } catch (Error) {
+      // Se o token for inválido ou expirar, faz o logout
+      this.logout();
+    }
+  }
+
+  // 6. NOVO MÉTODO: Verificador de Papel
+  // Um método fácil para os componentes perguntarem "Este usuário é um PRESTADOR?"
+  hasRole(role: string): boolean {
+    return this.userRoles.value.includes(role);
   }
 }
