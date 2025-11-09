@@ -15,7 +15,8 @@
 
     @if (isLoggedIn$ | async) { @if (authService.hasRole('ROLE_PRESTADOR')) {
     <div class="form-container" style="margin-bottom: 2rem; background-color: #f9f9f9">
-      <h4>Adicionar Novo Item ao Portfólio</h4>
+      <h4>{{ editandoPublicacaoId ? 'Editar Publicação' : 'Adicionar Novo Item ao Portfólio' }}</h4>
+
       <form [formGroup]="publicacaoForm" (ngSubmit)="onPostarPublicacao()">
         <div class="form-group">
           <label for="titulo">Título</label>
@@ -41,8 +42,12 @@
             placeholder="http://exemplo.com/imagem.png"
           />
         </div>
-        <button type="submit" [disabled]="publicacaoForm.invalid">Postar</button>
-        @if (mensagemSucessoPublicacao) {
+        <button type="submit" [disabled]="publicacaoForm.invalid">
+          {{ editandoPublicacaoId ? 'Salvar alterações' : 'Postar' }}
+        </button>
+        @if (editandoPublicacaoId) {
+        <button type="button" class="btn-cancel" (click)="cancelarEdicao()">Cancelar edição</button>
+        } @if (mensagemSucessoPublicacao) {
         <div class="success-message">{{ mensagemSucessoPublicacao }}</div>
         }
       </form>
@@ -53,7 +58,10 @@
       @for (pub of (publicacoes$ | async); track pub.id) {
       <div class="pub-card">
         @if (authService.isLoggedIn$ | async) { @if (authService.hasRole('ROLE_PRESTADOR')) {
-        <button class="btn-delete" (click)="onDeletarPublicacao(pub.id)">X</button>
+        <button type="button" class="btn-delete" (click)="onDeletarPublicacao(pub.id)">X</button>
+
+        <button type="button" class="btn-edit" (click)="onCarregarParaEditar(pub)">Editar</button>
+
         } } @if(pub.fotoUrl) {
         <img [src]="pub.fotoUrl" alt="Foto da Publicação" />
         }
@@ -74,6 +82,7 @@
       <div class="aval-card">
         @if (isLoggedIn$ | async) { @if (authService.hasRole('ROLE_CLIENTE')) {
         <button class="btn-delete" (click)="onDeletarAvaliacao(aval.id)">X</button>
+        <button class="btn-edit" (click)="onCarregarAvaliacaoParaEditar(aval)">Editar</button>
         } }
         <div class="nota">Nota: {{ aval.nota }} / 5</div>
         <p>"{{ aval.comentario }}"</p>
@@ -87,8 +96,19 @@
 
   <div class="section form-container">
     @if (isLoggedIn$ | async) { @if (authService.hasRole('ROLE_CLIENTE')) {
-    <h3>Deixe sua Avaliação</h3>
+
+    <h3>
+      {{ editandoAvaliacaoId ? 'Editar Avaliação' : 'Deixe sua Avaliação (para o Prestador)' }}
+    </h3>
+
     <form [formGroup]="avaliacaoForm" (ngSubmit)="onPostarAvaliacao()">
+      @if (!editandoAvaliacaoId) {
+      <div class="form-group">
+        <label for="clienteId">Seu ID de Cliente (para teste)</label>
+        <input id="clienteId" type="number" formControlName="clienteId" />
+      </div>
+      }
+
       <div class="form-group">
         <label for="nota">Nota (de 1 a 5)</label>
         <select id="nota" formControlName="nota">
@@ -99,31 +119,34 @@
           <option value="1">1 Estrela</option>
         </select>
       </div>
+
       <div class="form-group">
         <label for="comentario">Comentário</label>
         <textarea id="comentario" formControlName="comentario" rows="4"></textarea>
-        @if (avaliacaoForm.get('comentario')?.invalid && avaliacaoForm.get('comentario')?.touched) {
-        <div class="error-message">Comentário é obrigatório.</div>
-        }
       </div>
 
-      <div class="form-group">
-        <label for="clienteId">Seu ID de Cliente (para teste)</label>
-        <input id="clienteId" type="number" formControlName="clienteId" />
-        @if (avaliacaoForm.get('clienteId')?.invalid && avaliacaoForm.get('clienteId')?.touched) {
-        <div class="error-message">Seu ID de cliente é obrigatório.</div>
-        }
-      </div>
-      <button type="submit" [disabled]="avaliacaoForm.invalid">Postar Avaliação</button>
-      @if (mensagemSucesso) {
+      <button type="submit" [disabled]="avaliacaoForm.invalid">
+        {{ editandoAvaliacaoId ? 'Salvar Alterações' : 'Postar Avaliação' }}
+      </button>
+
+      @if (editandoAvaliacaoId) {
+      <button type="button" class="btn-cancel" (click)="cancelarEdicaoAvaliacao()">Cancelar</button>
+      } @if (mensagemSucesso) {
       <div class="success-message">{{ mensagemSucesso }}</div>
       }
     </form>
+
+    } @else {
+
+    <p>Você precisa ser cliente para avaliar.</p>
+
     } } @else {
+
     <p>
       Você precisa estar logado para deixar uma avaliação.
       <a routerLink="/login">Faça o login aqui.</a>
     </p>
+
     }
   </div>
 </div>

@@ -1,1 +1,112 @@
 /* You can add global styles to this file, and also import other style files */
+/* --- TEMA GLOBAL --- */
+
+/* 1. Definição da nossa paleta de cores (CSS Variables) */
+:root {
+  --cor-amarela-principal: #FFD700; /* Amarelo (estilo "ouro") */
+  --cor-amarela-secundaria: #FFFACD; /* Amarelo bem claro (para fundos) */
+  --cor-texto-principal: #333;       /* Grafite escuro (para textos) */
+  --cor-texto-secundario: #777;     /* Cinza (para subtextos) */
+  --cor-fundo: #FAFAFA;            /* Cinza super claro (fundo do Instagram) */
+  --cor-borda: #DBDBDB;            /* Borda cinza clara (estilo Instagram) */
+  --cor-branca: #FFFFFF;
+  --cor-azul-link: #00376B;         /* Azul para links */
+}
+
+/* 2. Reset e Estilos de Base */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto-principal);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* 3. Estilos de Formulário Globais (para todos os formulários) */
+.form-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: var(--cor-branca);
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+}
+.form-container h2,
+.form-container h3 {
+  text-align: center;
+  color: var(--cor-texto-principal);
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+.form-group {
+  margin-bottom: 1.25rem;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--cor-texto-secundario);
+}
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group input[type="number"],
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 4px;
+  background-color: var(--cor-fundo);
+  font-size: 1rem;
+  color: var(--cor-texto-principal);
+}
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.checkbox-item label {
+  font-weight: normal;
+  margin-bottom: 0;
+}
+button {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  background-color: var(--cor-amarela-principal);
+  color: var(--cor-texto-principal);
+  transition: opacity 0.2s;
+}
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+button:not(:disabled):hover {
+  opacity: 0.8;
+}
+.btn-cancel {
+  background-color: #eee;
+  color: var(--cor-texto-secundario);
+  margin-top: 0.5rem;
+}
+.error-message {
+  color: #d9534f;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+.success-message {
+  color: #28a745;
+  text-align: center;
+  margin-top: 1rem;
+  font-weight: 600;
+}

@@ -45,6 +45,11 @@ export class PrestadorDetailComponent implements OnInit {
   prestadorId: number = 0;
   mensagemSucesso: string = '';
   mensagemSucessoPublicacao: string = '';
+  mensagemErro: string | null = null;
+
+  editandoAvaliacaoId: number | null = null;
+  // NOVA VARIÁVEL
+  editandoPublicacaoId: number | null = null;
 
   // Para controlar qual formulário de avaliação de publicação está aberto
   publicacaoAbertaParaAvaliar: number | null = null;
@@ -60,7 +65,7 @@ export class PrestadorDetailComponent implements OnInit {
     // Avaliação do PRESTADOR
     this.avaliacaoForm = this.fb.group({
       nota: [5, Validators.required],
-      comentario: ['', Validators.required],
+      comentario: [null]
     });
 
     // Nova Publicação
@@ -94,11 +99,46 @@ export class PrestadorDetailComponent implements OnInit {
     }
   }
 
+  onCarregarParaEditar(publicacao: Publicacao) {
+    console.log('Carregando publicação para edição:', publicacao);
+
+    this.editandoPublicacaoId = publicacao.id;
+
+    this.publicacaoForm.patchValue({
+      titulo: publicacao.titulo,
+      descricao: publicacao.descricao,
+      fotoUrl: publicacao.fotoUrl,
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // opcional (smooth)
+  }
+
   // Método para postar publicação
   onPostarPublicacao() {
     if (this.publicacaoForm.invalid) {
       return;
     }
+
+    // 👉 SE houver uma publicação sendo editada, fará UPDATE (PUT)
+    if (this.editandoPublicacaoId !== null) {
+      this.publicacaoService
+        .atualizar(this.prestadorId, this.editandoPublicacaoId, this.publicacaoForm.value)
+        .subscribe({
+          next: () => {
+            this.mensagemSucessoPublicacao = 'Publicação atualizada com sucesso!';
+            this.publicacaoForm.reset();
+            this.editandoPublicacaoId = null;
+            this.refreshPublicacoes.next();
+          },
+          error: (err) => {
+            console.error('Erro ao atualizar publicação:', err);
+          },
+        });
+
+      return; // impede de cair no POST abaixo
+    }
+
+    // 👉 Se NÃO estiver editando, faz o POST (criação)
     this.publicacaoService.salvar(this.prestadorId, this.publicacaoForm.value).subscribe({
       next: () => {
         this.mensagemSucessoPublicacao = 'Publicação criada com sucesso!';
@@ -106,28 +146,66 @@ export class PrestadorDetailComponent implements OnInit {
         this.refreshPublicacoes.next();
       },
       error: (err) => {
-        /* ... (código de erro) ... */
+        console.error('Erro ao criar publicação:', err);
       },
     });
   }
 
+  cancelarEdicao() {
+    this.editandoPublicacaoId = null;
+    this.publicacaoForm.reset();
+  }
+
   // Método para postar avaliação do PRESTADOR
+  // Substitua seu método onPostarAvaliacao por este:
   onPostarAvaliacao() {
     if (this.avaliacaoForm.invalid) {
+      this.avaliacaoForm.markAllAsTouched();
       return;
     }
-    this.avaliacaoService
-      .salvarParaPrestador(this.prestadorId, this.avaliacaoForm.value)
-      .subscribe({
+
+    // Se estamos editando...
+    if (this.editandoAvaliacaoId) {
+      // ...chame o serviço de ATUALIZAR
+      // (Nota: o DTO de atualização não precisa do clienteId)
+      const avaliacaoDTO = {
+        nota: this.avaliacaoForm.value.nota,
+        comentario: this.avaliacaoForm.value.comentario,
+      };
+
+      this.avaliacaoService.atualizar(this.editandoAvaliacaoId, avaliacaoDTO).subscribe({
         next: () => {
-          this.mensagemSucesso = 'Avaliação postada com sucesso!';
+          this.mensagemSucesso = 'Avaliação ATUALIZADA com sucesso!';
+          this.avaliacaoForm.reset({ nota: 5 });
+          this.editandoAvaliacaoId = null; // Limpa o modo de edição
+          this.refreshAvaliacoes.next();
+        },
+        error: (err) => {
+          console.error('Erro ao atualizar avaliação', err);
+          this.mensagemSucesso = 'Erro ao atualizar avaliação.';
+        },
+      });
+    } else {
+      // ...caso contrário, chame o serviço de SALVAR (Criar)
+      // (O DTO de criação precisa do clienteId de teste)
+      const avaliacaoDTO = {
+        nota: this.avaliacaoForm.value.nota,
+        comentario: this.avaliacaoForm.value.comentario,
+        clienteId: this.avaliacaoForm.value.clienteId,
+      };
+
+      this.avaliacaoService.salvarParaPrestador(this.prestadorId, avaliacaoDTO).subscribe({
+        next: () => {
+          this.mensagemSucesso = 'Avaliação CRIADA com sucesso!';
           this.avaliacaoForm.reset({ nota: 5 });
           this.refreshAvaliacoes.next();
         },
         error: (err) => {
-          /* ... (código de erro) ... */
+          console.error('Erro ao atualizar avaliação', err);
+          this.mensagemErro = 'Erro ao atualizar avaliação.';
         },
       });
+    }
   }
 
   // NOVO MÉTODO: Postar avaliação da PUBLICAÇÃO
@@ -190,5 +268,19 @@ export class PrestadorDetailComponent implements OnInit {
         },
       });
     }
+  }
+  onCarregarAvaliacaoParaEditar(avaliacao: AvaliacaoResponse) {
+    this.editandoAvaliacaoId = avaliacao.id;
+
+    this.avaliacaoForm.patchValue({
+      nota: avaliacao.nota,
+      comentario: avaliacao.comentario,
+    });
+  }
+  // Dentro da classe PrestadorDetailComponent
+
+  cancelarEdicaoAvaliacao() {
+    this.editandoAvaliacaoId = null;
+    this.avaliacaoForm.reset({ nota: 5 });
   }
 }

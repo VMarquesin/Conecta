@@ -11,23 +11,25 @@ export interface PublicacaoDTO {
 
 @Injectable({ providedIn: 'root' })
 export class PublicacaoService {
-
   // CORREÇÃO 1: A URL base deve ser a raiz da API
-  private apiUrl = 'http://localhost:8080/api'; 
+  private apiUrl = 'http://localhost:8080/api';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   salvar(prestadorId: number, publicacao: PublicacaoDTO): Observable<any> {
     // CORREÇÃO 2: A rota de salvar é uma sub-rota de 'prestadores'
     return this.http.post(`${this.apiUrl}/prestadores/${prestadorId}/publicacoes`, publicacao);
   }
-  
-  deletar(prestadorId: number, publicacaoId: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/prestadores/${prestadorId}/publicacoes/${publicacaoId}`);
-  }
-  atualizar(publicacaoId: number, publicacao: PublicacaoDTO): Observable<any> {
-    // Chama a rota PUT /api/publicacoes/{id}
-    return this.http.put(`${this.apiUrl}/publicacoes/${publicacaoId}`, publicacao);
-  }
 
+  deletar(prestadorId: number, publicacaoId: number): Observable<any> {
+    return this.http.delete(
+      `${this.apiUrl}/prestadores/${prestadorId}/publicacoes/${publicacaoId}`
+    );
+  }
+  atualizar(prestadorId: number, publicacaoId: number, publicacao: PublicacaoDTO): Observable<any> {
+    return this.http.put(
+      `${this.apiUrl}/prestadores/${prestadorId}/publicacoes/${publicacaoId}`,
+      publicacao
+    );
+  }
 }

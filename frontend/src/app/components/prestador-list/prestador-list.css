@@ -1,4 +1,33 @@
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
 .prestador-card-link {
   text-decoration: none;
-  color: inherit; /* Herda a cor do texto normal */
+  color: inherit;
+}
+.prestador-card {
+  background-color: var(--cor-branca);
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  padding: 1rem;
+  transition: box-shadow 0.2s;
+}
+.prestador-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.prestador-card h4 {
+  margin-top: 0;
+  font-size: 1.2rem;
+  color: var(--cor-texto-principal);
+}
+.prestador-card .fantasia {
+  font-style: italic;
+  color: var(--cor-texto-secundario);
+  margin-bottom: 1rem;
+}
+.prestador-card .email {
+  font-size: 0.9em;
+  color: var(--cor-azul-link);
 }

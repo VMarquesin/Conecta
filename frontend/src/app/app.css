@@ -2,31 +2,46 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #333;
-  padding: 1rem 2rem;
-  color: white;
+  background-color: var(--cor-branca);
+  padding: 0.5rem 2rem;
+  border-bottom: 1px solid var(--cor-borda);
 }
 .navbar a {
-  color: white;
+  color: var(--cor-texto-principal);
   text-decoration: none;
   font-weight: bold;
   font-size: 1.5rem;
+  font-family: 'Cursive', sans-serif; /* Dando um toque "Instagram" */
 }
 .nav-links {
   list-style: none;
   display: flex;
+  align-items: center;
   margin: 0;
   padding: 0;
   gap: 1.5rem;
 }
 .nav-links a {
   font-size: 1rem;
-  font-weight: normal;
+  font-weight: 600;
+  color: var(--cor-texto-secundario);
   transition: color 0.2s;
 }
 .nav-links a:hover {
-  color: #007bff;
+  color: var(--cor-texto-principal);
+}
+.nav-links a.login-link {
+  background-color: var(--cor-amarela-principal);
+  color: var(--cor-texto-principal);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+}
+.nav-links a.login-link:hover {
+  opacity: 0.8;
+  color: var(--cor-texto-principal);
 }
 .content {
-  padding: 1rem;
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 0 1rem;
 }
