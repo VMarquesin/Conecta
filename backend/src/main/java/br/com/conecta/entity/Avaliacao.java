@@ -2,6 +2,7 @@ package br.com.conecta.entity;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -25,14 +26,30 @@ public class Avaliacao {
     private LocalDateTime dataAvaliacao;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "prestador_id", nullable = false)
-    private Prestador prestador;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
+    // DEVE ESTAR NULLABLE = TRUE
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "prestador_id", nullable = true) 
+    private Prestador prestador;
+
+    // NOVO CAMPO
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "publicacao_id", nullable = true)
+    @JsonIgnore
+    private Publicacao publicacao;
+
     // Getters e Setters
+
+    public Publicacao getPublicacao() {
+        return publicacao;
+    }
+    
+    public void setPublicacao(Publicacao publicacao) {
+        this.publicacao = publicacao;
+    }
+
     public Integer getId() {
         return id;
     }

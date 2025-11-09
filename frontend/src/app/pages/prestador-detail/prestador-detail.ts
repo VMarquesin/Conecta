@@ -1,10 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, switchMap, BehaviorSubject, tap } from 'rxjs'; 
+import { Observable, switchMap, BehaviorSubject } from 'rxjs';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { Prestador, PrestadorService, Publicacao, AvaliacaoResponse } from '../../services/prestador.service';
+// Nossos Serviços e Interfaces
+import {
+  Prestador,
+  PrestadorService,
+  Publicacao,
+  AvaliacaoResponse,
+} from '../../services/prestador.service';
 import { AvaliacaoService } from '../../services/avaliacao';
 import { AuthService } from '../../services/auth';
 import { PublicacaoService } from '../../services/publicacao';
@@ -12,32 +18,37 @@ import { PublicacaoService } from '../../services/publicacao';
 @Component({
   selector: 'app-prestador-detail',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule], 
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './prestador-detail.html',
-  styleUrl: './prestador-detail.css'
+  styleUrl: './prestador-detail.css',
 })
 export class PrestadorDetailComponent implements OnInit {
-
+  // Observables para os dados da página
   prestador$!: Observable<Prestador>;
   publicacoes$!: Observable<Publicacao[]>;
   avaliacoes$!: Observable<AvaliacaoResponse[]>;
 
+  // BehaviorSubjects para forçar o "refresh"
   private refreshAvaliacoes = new BehaviorSubject<void>(undefined);
   private refreshPublicacoes = new BehaviorSubject<void>(undefined);
 
-  // Status de Login
   isLoggedIn$: Observable<boolean>;
-  
+
   // Formulários
-  avaliacaoForm: FormGroup;
+  avaliacaoForm: FormGroup; // Para a avaliação do prestador
   publicacaoForm: FormGroup;
-  
+
+  // NOVO FORMULÁRIO (para avaliação da publicação)
+  pubAvaliacaoForm: FormGroup;
+
   // Variáveis de estado
   prestadorId: number = 0;
   mensagemSucesso: string = '';
   mensagemSucessoPublicacao: string = '';
 
-  // O Construtor é onde inicializamos os formulários
+  // Para controlar qual formulário de avaliação de publicação está aberto
+  publicacaoAbertaParaAvaliar: number | null = null;
+
   constructor(
     private route: ActivatedRoute,
     private prestadorService: PrestadorService,
@@ -46,88 +57,138 @@ export class PrestadorDetailComponent implements OnInit {
     public authService: AuthService,
     private fb: FormBuilder
   ) {
-    
-    // 1. Inicializa o formulário de avaliação
+    // Avaliação do PRESTADOR
     this.avaliacaoForm = this.fb.group({
-      nota: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
+      nota: [5, Validators.required],
       comentario: ['', Validators.required],
-      clienteId: [null, Validators.required] 
     });
 
-    // 2. Inicializa o formulário de publicação (ESTAVA NO LUGAR ERRADO)
+    // Nova Publicação
     this.publicacaoForm = this.fb.group({
       titulo: ['', Validators.required],
       descricao: ['', Validators.required],
-      fotoUrl: [''] // Campo opcional
+      fotoUrl: [''],
     });
-    
-    // 3. "Ouve" o status de login (só precisa ser feito uma vez)
+
+    // NOVO: Avaliação da PUBLICACAO
+    this.pubAvaliacaoForm = this.fb.group({
+      nota: [5, Validators.required],
+      comentario: ['', Validators.required],
+    });
+
     this.isLoggedIn$ = this.authService.isLoggedIn$;
   }
 
-  // ngOnInit é onde buscamos os dados iniciais
   ngOnInit(): void {
-    // Pega o ID do prestador da URL uma vez
     const idParam = this.route.snapshot.paramMap.get('id');
     this.prestadorId = Number(idParam);
 
-    if (this.prestadorId) {
-      // Busca os dados do prestador
+    if (this.prestadorId > 0) {
       this.prestador$ = this.prestadorService.getPrestadorById(this.prestadorId);
-      
-      // Busca as publicações (usando o BehaviorSubject para dar refresh)
       this.publicacoes$ = this.refreshPublicacoes.pipe(
         switchMap(() => this.prestadorService.getPublicacoesPorPrestador(this.prestadorId))
       );
-      
-      // Busca as avaliações (usando o BehaviorSubject para dar refresh)
       this.avaliacoes$ = this.refreshAvaliacoes.pipe(
         switchMap(() => this.prestadorService.getAvaliacoesPorPrestador(this.prestadorId))
       );
     }
   }
 
-  // Método para enviar a nova publicacao
+  // Método para postar publicação
   onPostarPublicacao() {
     if (this.publicacaoForm.invalid) {
-      this.publicacaoForm.markAllAsTouched();
       return;
     }
-
     this.publicacaoService.salvar(this.prestadorId, this.publicacaoForm.value).subscribe({
       next: () => {
         this.mensagemSucessoPublicacao = 'Publicação criada com sucesso!';
         this.publicacaoForm.reset();
-        
-        // Força a atualização da lista de publicações
-        this.refreshPublicacoes.next(); 
+        this.refreshPublicacoes.next();
       },
       error: (err) => {
-        console.error('Erro ao criar publicação', err);
-        this.mensagemSucessoPublicacao = 'Erro ao criar publicação. (Verifique o console)';
-      }
+        /* ... (código de erro) ... */
+      },
     });
   }
 
-  // Método para enviar a nova avaliação
+  // Método para postar avaliação do PRESTADOR
   onPostarAvaliacao() {
     if (this.avaliacaoForm.invalid) {
-      this.avaliacaoForm.markAllAsTouched();
       return;
     }
+    this.avaliacaoService
+      .salvarParaPrestador(this.prestadorId, this.avaliacaoForm.value)
+      .subscribe({
+        next: () => {
+          this.mensagemSucesso = 'Avaliação postada com sucesso!';
+          this.avaliacaoForm.reset({ nota: 5 });
+          this.refreshAvaliacoes.next();
+        },
+        error: (err) => {
+          /* ... (código de erro) ... */
+        },
+      });
+  }
 
-    this.avaliacaoService.salvar(this.prestadorId, this.avaliacaoForm.value).subscribe({
-      next: () => {
-        this.mensagemSucesso = 'Avaliação postada com sucesso!';
-        this.avaliacaoForm.reset({ nota: 5 }); // Reseta o formulário
-        
-        // Força a atualização da lista de avaliações
-        this.refreshAvaliacoes.next(); 
-      },
-      error: (err) => {
-        console.error('Erro ao postar avaliação', err);
-        this.mensagemSucesso = 'Erro ao postar avaliação. (Verifique o console)';
-      }
-    });
+  // NOVO MÉTODO: Postar avaliação da PUBLICAÇÃO
+  onPostarAvaliacaoPublicacao(publicacaoId: number) {
+    if (this.pubAvaliacaoForm.invalid) {
+      return;
+    }
+    this.avaliacaoService
+      .salvarParaPublicacao(publicacaoId, this.pubAvaliacaoForm.value)
+      .subscribe({
+        next: () => {
+          alert('Avaliação da publicação enviada com sucesso!');
+          this.pubAvaliacaoForm.reset({ nota: 5 });
+          this.publicacaoAbertaParaAvaliar = null; // Fecha o formulário
+          // Podemos dar refresh em tudo para atualizar contagens, etc.
+          this.refreshPublicacoes.next();
+        },
+        error: (err) => {
+          /* ... (código de erro) ... */
+        },
+      });
+  }
+
+  // NOVO MÉTODO: Controla qual formulário de pub. está aberto
+  toggleAvaliacaoPublicacao(publicacaoId: number) {
+    if (this.publicacaoAbertaParaAvaliar === publicacaoId) {
+      this.publicacaoAbertaParaAvaliar = null; // Fecha se já estiver aberto
+    } else {
+      this.publicacaoAbertaParaAvaliar = publicacaoId; // Abre o novo
+      this.pubAvaliacaoForm.reset({ nota: 5 });
+    }
+  }
+  onDeletarPublicacao(publicacaoId: number) {
+    if (confirm('Tem certeza que deseja deletar esta publicação?')) {
+      this.publicacaoService.deletar(this.prestadorId, publicacaoId).subscribe({
+        next: () => {
+          alert('Publicação deletada com sucesso!');
+          this.refreshPublicacoes.next();
+        },
+        error: (err) => {
+          console.error('Erro ao deletar publicação', err);
+          alert('Erro: Você não tem permissão para deletar esta publicação.');
+        },
+      });
+    }
+  }
+
+  // NOVO: Método para deletar avaliação
+  onDeletarAvaliacao(avaliacaoId: number) {
+    if (confirm('Tem certeza que deseja deletar esta avaliação?')) {
+      this.avaliacaoService.deletar(avaliacaoId).subscribe({
+        next: () => {
+          alert('Avaliação deletada com sucesso!');
+          // Força o refresh da lista de avaliações
+          this.refreshAvaliacoes.next();
+        },
+        error: (err) => {
+          console.error('Erro ao deletar avaliação', err);
+          alert('Erro: Você não tem permissão para deletar esta avaliação.');
+        },
+      });
+    }
   }
 }

@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-// 1. A INTERFACE 'Prestador' QUE ESTAVA FALTANDO
 // Esta é a interface para os dados que vêm da listagem e do detalhe
 export interface Prestador {
   id: number;
@@ -52,17 +51,13 @@ export class PrestadorService {
 
   constructor(private http: HttpClient) {}
 
-  // 2. O MÉTODO 'getPrestadores' QUE ESTAVA FALTANDO
   getPrestadores(): Observable<Prestador[]> {
     return this.http.get<Prestador[]>(this.apiUrl);
   }
 
-  // 3. O MÉTODO 'salvar' QUE ESTAVA FALTANDO
   salvar(prestador: PrestadorDTO): Observable<any> {
     return this.http.post(this.apiUrl, prestador);
   }
-
-  // --- NOSSOS NOVOS MÉTODOS ---
 
   getPrestadorById(id: number): Observable<Prestador> {
     return this.http.get<Prestador>(`${this.apiUrl}/${id}`);
@@ -73,6 +68,9 @@ export class PrestadorService {
   }
 
   getAvaliacoesPorPrestador(id: number): Observable<AvaliacaoResponse[]> {
-    return this.http.get<AvaliacaoResponse[]>(`${this.apiUrl}/${id}/avaliacoes`);
+    // CORREÇÃO: A URL agora aponta para a nova rota de avaliações do backend
+    return this.http.get<AvaliacaoResponse[]>(
+      `http://localhost:8080/api/avaliacoes/prestador/${id}`
+    );
   }
 }

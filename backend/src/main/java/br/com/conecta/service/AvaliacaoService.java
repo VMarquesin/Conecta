@@ -5,18 +5,24 @@ import br.com.conecta.entity.Avaliacao;
 import br.com.conecta.entity.Cliente;
 
 import br.com.conecta.entity.Prestador;
+import br.com.conecta.entity.Publicacao;
 import br.com.conecta.repository.AvaliacaoRepository;
 import br.com.conecta.repository.ClienteRepository;
 import br.com.conecta.repository.PrestadorRepository;
+import br.com.conecta.repository.PublicacaoRepository;
 import br.com.conecta.exception.ResourceNotFoundException; 
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
+
 import br.com.conecta.dto.AvaliacaoResponseDTO;
 import java.util.stream.Collectors;
-
 import java.util.List;
 
 @Service
@@ -28,64 +34,90 @@ public class AvaliacaoService {
     private PrestadorRepository prestadorRepository;
     @Autowired
     private ClienteRepository clienteRepository;
+    @Autowired
+    private PublicacaoRepository publicacaoRepository;
 
     @Transactional
-    public Avaliacao criar(Integer prestadorId, AvaliacaoDTO avaliacaoDTO) {
+    public Avaliacao criarParaPrestador(Integer prestadorId, AvaliacaoDTO avaliacaoDTO) {
+        
+        // 2. DESCOBRIR O USUÁRIO LOGADO
+        // Pega a autenticação do "contexto de segurança" (que o nosso filtro JWT preencheu)
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String emailDoUsuarioLogado = authentication.getName(); // Isso nos dá o email
+
+        // 3. BUSCAR O CLIENTE PELO EMAIL
+        // (Não podemos mais confiar no clienteId que vem do DTO)
+        Cliente cliente = clienteRepository.findByEmail(emailDoUsuarioLogado)
+                .orElseThrow(() -> new UsernameNotFoundException("Cliente não encontrado com o email: " + emailDoUsuarioLogado));
+
+        // --- O resto da lógica é o mesmo ---
         Prestador prestador = prestadorRepository.findById(prestadorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Prestador não encontrado"));
-        Cliente cliente = clienteRepository.findById(avaliacaoDTO.getClienteId())
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Prestador não encontrado"));
 
         Avaliacao avaliacao = new Avaliacao();
         avaliacao.setNota(avaliacaoDTO.getNota());
         avaliacao.setComentario(avaliacaoDTO.getComentario());
         avaliacao.setPrestador(prestador);
-        avaliacao.setCliente(cliente);
+        avaliacao.setCliente(cliente); // 4. Usa o cliente que buscamos pelo token
 
         return avaliacaoRepository.save(avaliacao);
     }
+    
     @Transactional
-    public Avaliacao atualizar(Integer prestadorId, Integer avaliacaoId, AvaliacaoDTO avaliacaoDTO) {
-        // Valida se o prestador e o cliente existem
-        prestadorRepository.findById(prestadorId).orElseThrow(() -> new ResourceNotFoundException("Prestador não encontrado"));
-        clienteRepository.findById(avaliacaoDTO.getClienteId()).orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
+    public Avaliacao criarParaPublicacao(Integer publicacaoId, AvaliacaoDTO avaliacaoDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String emailDoUsuarioLogado = authentication.getName();
 
-        Avaliacao avaliacao = avaliacaoRepository.findById(avaliacaoId)
-                .orElseThrow(() -> new ResourceNotFoundException("Avaliação não encontrada"));
-        
-        // Validações de segurança
-        if (!avaliacao.getPrestador().getId().equals(prestadorId)) {
-            throw new ResourceNotFoundException("Avaliação não pertence a este prestador.");
-        }
-        if (!avaliacao.getCliente().getId().equals(avaliacaoDTO.getClienteId())) {
-            throw new ResourceNotFoundException("Apenas o cliente que criou a avaliação pode editá-la.");
-        }
+        Cliente cliente = clienteRepository.findByEmail(emailDoUsuarioLogado)
+                .orElseThrow(() -> new UsernameNotFoundException("Cliente não encontrado"));
 
+        Publicacao publicacao = publicacaoRepository.findById(publicacaoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Publicação não encontrada"));
+
+        Avaliacao avaliacao = new Avaliacao();
         avaliacao.setNota(avaliacaoDTO.getNota());
         avaliacao.setComentario(avaliacaoDTO.getComentario());
+        avaliacao.setCliente(cliente);
+        avaliacao.setPublicacao(publicacao); 
 
         return avaliacaoRepository.save(avaliacao);
     }
 
-    @Transactional
-    public void deletar(Integer prestadorId, Integer avaliacaoId, Integer clienteId) {
-        // Valida se o prestador existe
-        prestadorRepository.findById(prestadorId).orElseThrow(() -> new ResourceNotFoundException("Prestador não encontrado"));
+    // Dentro da classe AvaliacaoService.java
 
-        Avaliacao avaliacao = avaliacaoRepository.findById(avaliacaoId)
-                .orElseThrow(() -> new ResourceNotFoundException("Avaliação não encontrada"));
-        
-        // Validações de segurança
-        if (!avaliacao.getPrestador().getId().equals(prestadorId)) {
-            throw new RuntimeException("Avaliação não pertence a este prestador.");
-        }
-        if (!avaliacao.getCliente().getId().equals(clienteId)) {
-            throw new RuntimeException("Apenas o cliente que criou a avaliação pode deletá-la.");
-        }
+@Transactional
+public Avaliacao atualizar(Integer avaliacaoId, AvaliacaoDTO avaliacaoDTO) {
+    String emailUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        avaliacaoRepository.deleteById(avaliacaoId);
+    Avaliacao avaliacao = avaliacaoRepository.findById(avaliacaoId)
+            .orElseThrow(() -> new ResourceNotFoundException("Avaliação não encontrada"));
+
+    // VERIFICAÇÃO DE DONO
+    if (!avaliacao.getCliente().getEmail().equals(emailUsuarioLogado)) {
+        throw new AccessDeniedException("Você não tem permissão para editar esta avaliação.");
     }
 
+    // Se for o dono, atualiza
+    avaliacao.setNota(avaliacaoDTO.getNota());
+    avaliacao.setComentario(avaliacaoDTO.getComentario());
+    return avaliacaoRepository.save(avaliacao);
+}
+
+@Transactional
+public void deletar(Integer avaliacaoId) {
+    String emailUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
+
+    Avaliacao avaliacao = avaliacaoRepository.findById(avaliacaoId)
+            .orElseThrow(() -> new ResourceNotFoundException("Avaliação não encontrada"));
+
+    // VERIFICAÇÃO DE DONO
+    if (!avaliacao.getCliente().getEmail().equals(emailUsuarioLogado)) {
+        throw new AccessDeniedException("Você não tem permissão para deletar esta avaliação.");
+    }
+
+    // Se for o dono, deleta
+    avaliacaoRepository.delete(avaliacao);
+}
     @Transactional(readOnly = true)
     public List<AvaliacaoResponseDTO> listarPorPrestador(Integer prestadorId) {
         // 1. Busca as entidades do banco

@@ -33,25 +33,15 @@ public class PublicacaoController {
     }
 
     @PutMapping("/{publicacaoId}")
-    public ResponseEntity<Publicacao> atualizar(@PathVariable Integer prestadorId,
-                                                @PathVariable Integer publicacaoId,
-                                                @RequestBody PublicacaoDTO publicacaoDTO) {
-        try {
-            Publicacao publicacaoAtualizada = publicacaoService.atualizar(prestadorId, publicacaoId, publicacaoDTO);
-            return ResponseEntity.ok(publicacaoAtualizada);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Publicacao> atualizar(@PathVariable Integer publicacaoId, @RequestBody PublicacaoDTO publicacaoDTO) {
+        // A lógica de segurança está toda no Service
+        Publicacao publicacaoAtualizada = publicacaoService.atualizar(publicacaoId, publicacaoDTO);
+        return ResponseEntity.ok(publicacaoAtualizada);
     }
 
     @DeleteMapping("/{publicacaoId}")
-    public ResponseEntity<Void> deletar(@PathVariable Integer prestadorId,
-                                        @PathVariable Integer publicacaoId) {
-        try {
-            publicacaoService.deletar(prestadorId, publicacaoId);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Void> deletar(@PathVariable Integer publicacaoId) {
+        publicacaoService.deletar(publicacaoId);
+        return ResponseEntity.noContent().build();
     }
 }

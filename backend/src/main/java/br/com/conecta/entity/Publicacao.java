@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.util.Set;
+import java.util.HashSet;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -32,7 +34,16 @@ public class Publicacao {
     @JsonIgnore
     private Prestador prestador;
 
+    @OneToMany(mappedBy = "publicacao", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Avaliacao> avaliacoes = new HashSet<>();
+
     // Getters e Setters
+    public Set<Avaliacao> getAvaliacoes() {
+        return avaliacoes;
+    }
+    public void setAvaliacoes(Set<Avaliacao> avaliacoes) {
+        this.avaliacoes = avaliacoes;
+    }
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public String getTitulo() { return titulo; }

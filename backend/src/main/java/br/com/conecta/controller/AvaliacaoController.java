@@ -12,48 +12,64 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/prestadores/{prestadorId}/avaliacoes")
+@RequestMapping("/api/avaliacoes") // Rota base correta
 public class AvaliacaoController {
 
     @Autowired
     private AvaliacaoService avaliacaoService;
 
-    @PostMapping
-    public ResponseEntity<Avaliacao> criar(@PathVariable Integer prestadorId, @RequestBody AvaliacaoDTO avaliacaoDTO) {
-        try {
-            Avaliacao novaAvaliacao = avaliacaoService.criar(prestadorId, avaliacaoDTO);
-            return ResponseEntity.ok(novaAvaliacao);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    /**
+     * Rota: POST /api/avaliacoes/prestador/{prestadorId}
+     */
+    @PostMapping("/prestador/{prestadorId}")
+    public ResponseEntity<Avaliacao> criarParaPrestador(
+            @PathVariable Integer prestadorId, 
+            @RequestBody AvaliacaoDTO avaliacaoDTO) {
+        
+        // Correção: Chamando o método 'criarParaPrestador' (como no seu service)
+        Avaliacao novaAvaliacao = avaliacaoService.criarParaPrestador(prestadorId, avaliacaoDTO);
+        return ResponseEntity.ok(novaAvaliacao);
     }
-    @GetMapping
+
+    /**
+     * Rota: POST /api/avaliacoes/publicacao/{publicacaoId}
+     */
+     @PostMapping("/publicacao/{publicacaoId}")
+    public ResponseEntity<Avaliacao> criarParaPublicacao(
+            @PathVariable Integer publicacaoId,
+            @RequestBody AvaliacaoDTO avaliacaoDTO) {
+        Avaliacao novaAvaliacao = avaliacaoService.criarParaPublicacao(publicacaoId, avaliacaoDTO);
+        return ResponseEntity.ok(novaAvaliacao);
+    }
+
+    /**
+     * Rota: GET /api/avaliacoes/prestador/{prestadorId}
+     */
+    @GetMapping("/prestador/{prestadorId}") 
     public ResponseEntity<List<AvaliacaoResponseDTO>> listarPorPrestador(@PathVariable Integer prestadorId) {
         List<AvaliacaoResponseDTO> avaliacoesDTO = avaliacaoService.listarPorPrestador(prestadorId);
         return ResponseEntity.ok(avaliacoesDTO);
     }
 
+    /**
+     * Rota: PUT /api/avaliacoes/prestador/{prestadorId}/{avaliacaoId}
+     */
+    // CORREÇÃO: A rota agora precisa do prestadorId
+    // Dentro da classe AvaliacaoController.java
+
     @PutMapping("/{avaliacaoId}")
-    public ResponseEntity<Avaliacao> atualizar(@PathVariable Integer prestadorId,
-                                               @PathVariable Integer avaliacaoId,
-                                               @RequestBody AvaliacaoDTO avaliacaoDTO) {
-        try {
-            Avaliacao avaliacaoAtualizada = avaliacaoService.atualizar(prestadorId, avaliacaoId, avaliacaoDTO);
-            return ResponseEntity.ok(avaliacaoAtualizada);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Avaliacao> atualizar(
+            @PathVariable Integer avaliacaoId,
+            @RequestBody AvaliacaoDTO avaliacaoDTO) {
+
+        Avaliacao avaliacaoAtualizada = avaliacaoService.atualizar(avaliacaoId, avaliacaoDTO);
+        return ResponseEntity.ok(avaliacaoAtualizada);
     }
 
     @DeleteMapping("/{avaliacaoId}")
-    public ResponseEntity<Void> deletar(@PathVariable Integer prestadorId,
-                                        @PathVariable Integer avaliacaoId,
-                                        @RequestParam Integer clienteId) {
-        try {
-            avaliacaoService.deletar(prestadorId, avaliacaoId, clienteId);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }    
+    public ResponseEntity<Void> deletar(@PathVariable Integer avaliacaoId) { 
+
+        avaliacaoService.deletar(avaliacaoId);
+        return ResponseEntity.noContent().build();
+    } 
 }
