@@ -1,92 +1,105 @@
-<div class="form-container">
-  <h2>Cadastro de Prestador</h2>
-
-  <form [formGroup]="cadastroForm" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label for="nomeCompleto">Nome Completo</label>
-      <input id="nomeCompleto" type="text" formControlName="nomeCompleto" />
-      <div
-        *ngIf="
-          cadastroForm.get('nomeCompleto')?.invalid && cadastroForm.get('nomeCompleto')?.touched
-        "
-        class="error-message"
-      >
-        Nome é obrigatório.
-      </div>
+<div class="split-screen-container">
+  
+  <!-- 1. Lado Esquerdo (Imagem Atrativa) -->
+  <div class="split-image-side">
+    <div class="image-overlay-text">
+      <h2>Junte-se ao Conecta</h2>
+      <p>Mostre seu talento para toda a vizinhança e conquiste mais clientes.</p>
     </div>
+  </div>
 
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input id="email" type="email" formControlName="email" />
-      <div
-        *ngIf="cadastroForm.get('email')?.invalid && cadastroForm.get('email')?.touched"
-        class="error-message"
-      >
-        Email é obrigatório e precisa ser válido.
-      </div>
-    </div>
+  <!-- 2. Lado Direito (Seu Formulário) -->
+  <div class="split-form-side">
+    
+    <!-- O seu formulário que você me enviou, agora com a sintaxe @if/@for -->
+    <div class="form-container">
+      <h2>Cadastro de Prestador</h2>
 
-    <div class="form-group">
-      <label for="senha">Senha</label>
-      <input id="senha" type="password" formControlName="senha" />
-      <div
-        *ngIf="cadastroForm.get('senha')?.invalid && cadastroForm.get('senha')?.touched"
-        class="error-message"
-      >
-        Senha é obrigatória (mínimo 6 caracteres).
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="cpf">CPF</label>
-      <input id="cpf" type="text" formControlName="cpf" />
-      <div
-        *ngIf="cadastroForm.get('cpf')?.invalid && cadastroForm.get('cpf')?.touched"
-        class="error-message"
-      >
-        CPF é obrigatório.
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="telefoneNumero">Telefone / WhatsApp</label>
-      <input id="telefoneNumero" type="text" formControlName="telefoneNumero" />
-      @if (cadastroForm.get('telefoneNumero')?.invalid &&
-      cadastroForm.get('telefoneNumero')?.touched) {
-      <div class="error-message">Telefone é obrigatório.</div>
-      }
-    </div>
-
-    <div class="form-group checkbox-item">
-      <input id="isWhatsapp" type="checkbox" formControlName="isWhatsapp" />
-      <label for="isWhatsapp">Este número é WhatsApp</label>
-    </div>
-
-    <div class="form-group">
-      <label for="nomeFantasia">Nome Fantasia (opcional)</label>
-      <input id="nomeFantasia" type="text" formControlName="nomeFantasia" />
-    </div>
-
-    <div class="form-group">
-      <label for="bio">Bio (opcional)</label>
-      <textarea id="bio" formControlName="bio" rows="3"></textarea>
-    </div>
-
-    <div classs="form-group">
-      <label>Selecione suas áreas de atuação:</label>
-
-      <div class="checkbox-group" formArrayName="categoriaIds">
-        <div *ngFor="let categoria of categorias; let i = index" class="checkbox-item">
-          <input type="checkbox" [formControlName]="i" />
-          <label>{{ categoria.nome }}</label>
+      <form [formGroup]="cadastroForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="nomeCompleto">Nome Completo</label>
+          <input id="nomeCompleto" type="text" formControlName="nomeCompleto" />
+          
+          <!-- SINTAXE ATUALIZADA -->
+          @if (cadastroForm.get('nomeCompleto')?.invalid && cadastroForm.get('nomeCompleto')?.touched) {
+            <div class="error-message">Nome é obrigatório.</div>
+          }
         </div>
-      </div>
-    </div>
 
-    <button type="submit" [disabled]="cadastroForm.invalid">Cadastrar Prestador</button>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input id="email" type="email" formControlName="email" />
+          
+          @if (cadastroForm.get('email')?.invalid && cadastroForm.get('email')?.touched) {
+            <div class="error-message">Email é obrigatório e precisa ser válido.</div>
+          }
+        </div>
 
-    <div *ngIf="mensagemSucesso" class="success-message">
-      {{ mensagemSucesso }}
+        <div class="form-group">
+          <label for="senha">Senha</label>
+          <input id="senha" type="password" formControlName="senha" />
+          
+          @if (cadastroForm.get('senha')?.invalid && cadastroForm.get('senha')?.touched) {
+            <div class="error-message">Senha é obrigatória (mínimo 6 caracteres).</div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="cpf">CPF</label>
+          <input id="cpf" type="text" formControlName="cpf" />
+          
+          @if (cadastroForm.get('cpf')?.invalid && cadastroForm.get('cpf')?.touched) {
+            <div class="error-message">CPF é obrigatório.</div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="telefoneNumero">Telefone / WhatsApp</label>
+          <input id="telefoneNumero" type="text" formControlName="telefoneNumero" />
+          
+          @if (cadastroForm.get('telefoneNumero')?.invalid && cadastroForm.get('telefoneNumero')?.touched) {
+            <div class="error-message">Telefone é obrigatório.</div>
+          }
+        </div>
+
+        <div class="form-group checkbox-item">
+          <input id="isWhatsapp" type="checkbox" formControlName="isWhatsapp" />
+          <label for="isWhatsapp">Este número é WhatsApp</label>
+        </div>
+
+        <div class="form-group">
+          <label for="nomeFantasia">Nome Fantasia (opcional)</label>
+          <input id="nomeFantasia" type="text" formControlName="nomeFantasia" />
+        </div>
+
+        <div class="form-group">
+          <label for="bio">Bio (opcional)</label>
+          <textarea id="bio" formControlName="bio" rows="3"></textarea>
+        </div>
+
+        <div class="form-group"> <!-- Corrigi 'div classs' para 'div class' -->
+          <label>Selecione suas áreas de atuação:</label>
+
+          <div class="checkbox-group" formArrayName="categoriaIds">
+            
+            <!-- SINTAXE ATUALIZADA -->
+            @for (categoria of categorias; track $index) {
+              <div class="checkbox-item">
+                <input type="checkbox" [formControlName]="$index" />
+                <label>{{ categoria.nome }}</label>
+              </div>
+            }
+          </div>
+        </div>
+
+        <button type="submit" [disabled]="cadastroForm.invalid">Cadastrar Prestador</button>
+
+        @if (mensagemSucesso) {
+          <div class="success-message">
+            {{ mensagemSucesso }}
+          </div>
+        }
+      </form>
     </div>
-  </form>
+  </div>
 </div>

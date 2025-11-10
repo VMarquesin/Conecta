@@ -73,4 +73,7 @@ export class PrestadorService {
       `http://localhost:8080/api/avaliacoes/prestador/${id}`
     );
   }
+  atualizar(id: number, prestadorData: PrestadorDTO): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, prestadorData);
+  }
 }

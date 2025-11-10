@@ -1,22 +1,40 @@
 <nav class="navbar">
-  <a routerLink="/">Conecta</a>
+  <a routerLink="/" class="logo">Conecta</a>
 
   <ul class="nav-links">
     
     @if (isLoggedIn$ | async) {
       <li><a routerLink="/perfil">Meu Perfil</a></li> 
       <li>
-        <a (click)="onLogout()" style="cursor: pointer;">Logout</a>
+        <a (click)="onLogout()" style="cursor: pointer;" class="logout-link">Logout</a>
       </li>
     } @else {
       <li><a routerLink="/cadastro">Cadastrar Cliente</a></li>
-      <li><a routerLink="/cadastro-prestador">Cadastrar Prestador</a></li>
-      <li><a routerLink="/login" class="login-link">Login</a></li>
+      
+      @if (currentRoute !== '/cadastro-prestador') {
+        <li><a routerLink="/cadastro-prestador">Cadastrar Prestador</a></li>
+      }
+      
+      @if (currentRoute !== '/login') {
+        <li><a routerLink="/login" class="login-link">Login</a></li>
+      }
     }
 
   </ul>
 </nav>
 
-<div class="content">
-  <router-outlet></router-outlet>
-</div>
+<router-outlet></router-outlet>
+
+@if (currentRoute === '/') {
+  <footer class="footer-container">
+    <div class="footer-content">
+      <div class="footer-info">
+        <p>© 2025 Conecta. Todos os direitos reservados.</p>
+      </div>
+      <div class="footer-contact">
+        <p>Email: conecta@gmail.com</p>
+        <p>WhatsApp: +55 47 98899-9899</p>
+      </div>
+    </div>
+  </footer>
+}

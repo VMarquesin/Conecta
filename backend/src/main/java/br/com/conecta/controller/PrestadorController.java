@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.*;
 
 import br.com.conecta.entity.Telefone;
 import br.com.conecta.dto.TelefoneDTO;
+import br.com.conecta.dto.PerfilUpdateDTO;
 
-import java.util.List;
 import jakarta.validation.Valid;
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/prestadores")
@@ -46,10 +48,14 @@ public class PrestadorController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Prestador> atualizar(@PathVariable Integer id, @Valid @RequestBody PrestadorDTO prestadorDTO) {
-        Prestador prestadorAtualizado = prestadorService.atualizar(id, prestadorDTO);
-        return ResponseEntity.ok(prestadorAtualizado);
-    }
+public ResponseEntity<Prestador> atualizar(
+        @PathVariable Integer id, 
+        @Valid @RequestBody PerfilUpdateDTO perfilDTO) { // 3. Mude o tipo do DTO aqui
+    
+    // 4. Chame o service (que vamos atualizar no próximo passo)
+    Prestador prestadorAtualizado = prestadorService.atualizarPerfil(id, perfilDTO);
+    return ResponseEntity.ok(prestadorAtualizado);
+}
     
     @PostMapping("/{prestadorId}/telefones")
     public ResponseEntity<Prestador> adicionarTelefone(@PathVariable Integer prestadorId, @RequestBody TelefoneDTO telefoneDTO) {

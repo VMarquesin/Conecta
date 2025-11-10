@@ -3,7 +3,7 @@ package br.com.conecta.entity;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.HashSet; 
 import java.util.Set;
 
@@ -23,6 +23,7 @@ public class Prestador {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String senhaHash;
 

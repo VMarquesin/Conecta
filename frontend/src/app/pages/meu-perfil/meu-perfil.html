@@ -1,0 +1,49 @@
+<div class="form-container">
+  @if (perfil$ | async; as perfil) {
+
+  <form [formGroup]="perfilForm" (ngSubmit)="onSalvarAlteracoes()">
+    @if (isPrestador) {
+    <h2>Meu Perfil de Prestador</h2>
+    <div class="form-group">
+      <label for="nomeFantasia">Nome Fantasia</label>
+      <input id="nomeFantasia" type="text" formControlName="nomeFantasia" />
+    </div>
+    <div class="form-group">
+      <label for="bio">Minha Bio (Descrição do Perfil)</label>
+      <textarea id="bio" formControlName="bio" rows="4"></textarea>
+    </div>
+    } @else {
+    <h2>Meu Perfil de Cliente</h2>
+    }
+
+    <hr />
+
+    <h4>Informações da Conta</h4>
+
+    <div class="form-group">
+      <label for="nomeCompleto">Nome Completo</label>
+      <input id="nomeCompleto" type="text" formControlName="nomeCompleto" />
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email (não pode ser alterado)</label>
+      <input id="email" type="email" formControlName="email" [readOnly]="true" />
+    </div>
+
+    <div class="form-group">
+      <label for="cpf">CPF (não pode ser alterado)</label>
+      <input id="cpf" type="text" formControlName="cpf" [readOnly]="true" />
+    </div>
+
+    <button type="submit">Salvar Alterações</button>
+    @if (mensagemSucesso) {
+    <div class="success-message" style="margin-top: 1rem">
+      {{ mensagemSucesso }}
+    </div>
+    }
+  </form>
+
+  } @else {
+  <p>Carregando perfil...</p>
+  }
+</div>

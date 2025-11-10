@@ -1,18 +1,26 @@
+/* Estilo da barra de navegação principal */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: var(--cor-branca);
+  /* COR AMARELA PRINCIPAL */
+  background-color: var(--cor-amarela-principal);
   padding: 0.5rem 2rem;
-  border-bottom: 1px solid var(--cor-borda);
+  border-bottom: 2px solid rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
-.navbar a {
+
+/* Logo "Conecta" (cor de texto principal para contraste) */
+.navbar a.logo {
   color: var(--cor-texto-principal);
   text-decoration: none;
   font-weight: bold;
-  font-size: 1.5rem;
-  font-family: 'Cursive', sans-serif; /* Dando um toque "Instagram" */
+  font-size: 2rem;
+  font-family: 'Pacifico', cursive; /* Fonte especial "estilo Instagram" */
 }
+
 .nav-links {
   list-style: none;
   display: flex;
@@ -21,27 +29,56 @@
   padding: 0;
   gap: 1.5rem;
 }
+/* Links com cor de texto principal */
 .nav-links a {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--cor-texto-secundario);
-  transition: color 0.2s;
+  color: var(--cor-texto-principal);
+  text-decoration: none;
+  transition: opacity 0.2s;
 }
 .nav-links a:hover {
-  color: var(--cor-texto-principal);
+  opacity: 0.7;
 }
-.nav-links a.login-link {
-  background-color: var(--cor-amarela-principal);
+
+/* Botões de Login/Logout (fundo branco para contraste) */
+.nav-links a.login-link,
+.nav-links a.logout-link {
+  background-color: var(--cor-branca);
   color: var(--cor-texto-principal);
   padding: 0.5rem 1rem;
   border-radius: 8px;
+  font-weight: 600;
 }
-.nav-links a.login-link:hover {
-  opacity: 0.8;
+.nav-links a.login-link:hover,
+.nav-links a.logout-link:hover {
+  opacity: 1;
+  background-color: #f4f4f4;
+}
+
+/* Footer (Fundo Amarelo) */
+.footer-container {
+  background-color: var(--cor-amarela-principal);
   color: var(--cor-texto-principal);
+  padding: 2rem;
+  /* Removemos a margem superior para acabar com a faixa branca */
+  margin-top: 0; 
+  border-top: 2px solid rgba(0,0,0,0.1);
 }
-.content {
+.footer-content {
   max-width: 960px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.footer-info, .footer-contact {
+  text-align: center;
+  flex-grow: 1;
+}
+.footer-info p, .footer-contact p {
+  margin: 0.25rem 0;
+  font-weight: 500;
 }

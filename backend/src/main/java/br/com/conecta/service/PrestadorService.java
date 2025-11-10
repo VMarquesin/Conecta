@@ -2,6 +2,7 @@ package br.com.conecta.service;
 
 import br.com.conecta.dto.PrestadorDTO;
 import br.com.conecta.dto.TelefoneDTO;
+import br.com.conecta.dto.PerfilUpdateDTO;
 import br.com.conecta.entity.Categoria;
 import br.com.conecta.entity.Prestador;
 import br.com.conecta.entity.Telefone;
@@ -13,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 import java.util.Optional; // Adicione esta importação
@@ -43,20 +46,22 @@ public class PrestadorService {
     }
     
     @Transactional
-    public Prestador atualizar(Integer id, PrestadorDTO prestadorDTO) {
+    public Prestador atualizarPerfil(Integer id, PerfilUpdateDTO perfilDTO) {
+        String emailUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
+
         Prestador prestadorExistente = prestadorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Prestador não encontrado com id: " + id));
 
-        prestadorExistente.setNomeCompleto(prestadorDTO.getNomeCompleto());
-        prestadorExistente.setNomeFantasia(prestadorDTO.getNomeFantasia());
-        prestadorExistente.setEmail(prestadorDTO.getEmail());
-        prestadorExistente.setBio(prestadorDTO.getBio());
-        prestadorExistente.setFotoPerfilUrl(prestadorDTO.getFotoPerfilUrl());
-        prestadorExistente.setCpf(prestadorDTO.getCpf());
-        
-        if (prestadorDTO.getSenha() != null && !prestadorDTO.getSenha().isEmpty()) {
-            prestadorExistente.setSenhaHash(prestadorDTO.getSenha());
+        // VERIFICAÇÃO DE DONO (Continua igual)
+        if (!prestadorExistente.getEmail().equals(emailUsuarioLogado)) {
+            throw new AccessDeniedException("Você não tem permissão para editar o perfil de outro usuário.");
         }
+        
+        // Atualiza apenas os campos do novo DTO
+        prestadorExistente.setNomeCompleto(perfilDTO.getNomeCompleto());
+        prestadorExistente.setNomeFantasia(perfilDTO.getNomeFantasia());
+        prestadorExistente.setBio(perfilDTO.getBio());
+        // Senha, email e CPF não são tocados!
 
         return prestadorRepository.save(prestadorExistente);
     }

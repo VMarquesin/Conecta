@@ -1,0 +1,195 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+/* --- 1. Seção Hero (Fundo Branco no Texto) --- */
+.hero-section {
+  height: 60vh;
+  background-image: url('https://images.pexels.com/photos/8005396/pexels-photo-8005396.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+.hero-text-box {
+  background-color: rgba(255, 255, 255, 0.95); /* Fundo branco translúcido */
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 450px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.hero-text-box h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--cor-texto-principal);
+  margin: 0 0 1rem 0;
+}
+.hero-text-box p {
+  font-size: 1.1rem;
+  color: var(--cor-texto-secundario);
+  margin-bottom: 1.5rem;
+}
+
+/* Botões (Genérico) */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+}
+.btn-primary {
+  background-color: var(--cor-amarela-principal);
+  color: var(--cor-texto-principal);
+}
+.btn-primary:hover {
+  background-color: var(--cor-texto-principal);
+  color: var(--cor-amarela-principal);
+}
+/* Botão "Branco" (para o CTA amarelo) */
+.btn-light {
+  background-color: var(--cor-branca);
+  color: var(--cor-texto-principal);
+}
+.btn-light:hover {
+  background-color: #f4f4f4;
+}
+/* Botão "Escuro" (NOVO, para o CTA amarelo) */
+.btn-dark {
+  background-color: var(--cor-texto-principal);
+  color: var(--cor-branca);
+}
+.btn-dark:hover {
+  background-color: #000;
+}
+
+
+/* --- 2. Seção de Categorias (Fundo Branco) --- */
+.category-section {
+  padding: 3rem 1rem;
+  max-width: 960px;
+  margin: 0 auto;
+  text-align: center;
+  background-color: var(--cor-branca); /* Fundo Branco */
+}
+/* ... (resto do .category-grid, .category-card) ... */
+.category-section h3 { font-size: 1.8rem; font-weight: 600; margin-bottom: 2rem; }
+.category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1.5rem; }
+.category-card { display: flex; align-items: center; justify-content: center; height: 120px; background-color: var(--cor-branca); border: 1px solid var(--cor-borda); border-radius: 8px; text-decoration: none; transition: all 0.2s; }
+.category-card:hover { border-color: var(--cor-amarela-principal); box-shadow: 0 4px 15px rgba(0,0,0,0.05); transform: translateY(-5px); }
+.category-card h4 { color: var(--cor-texto-principal); font-size: 1.1rem; font-weight: 600; margin: 0; }
+
+/* --- 3. Seção CTA (Botão Escuro) --- */
+.cta-section {
+  background-color: var(--cor-amarela-principal);
+  padding: 4rem 1rem;
+  text-align: center;
+}
+/* ... (estilos .cta-content) ... */
+.cta-content { max-width: 600px; margin: 0 auto; }
+.cta-content h3 { font-size: 2rem; font-weight: 700; color: var(--cor-texto-principal); margin: 0 0 1rem 0; }
+.cta-content p { font-size: 1.1rem; color: var(--cor-texto-principal); margin-bottom: 2rem; }
+
+
+/* --- 4. Seção FAQ (Fundo Branco e Carrossel Novo) --- */
+.faq-section {
+  padding: 3rem 1rem;
+  background-color: var(--cor-branca); /* Fundo Branco */
+  /* Remove a margem superior para acabar com a faixa branca */
+  margin-top: 0; 
+}
+.faq-header {
+  max-width: 960px;
+  margin: 0 auto 2rem auto;
+  padding: 0 1rem;
+  text-align: center;
+}
+.faq-header h3 { font-size: 1.8rem; margin: 0 0 0.5rem 0; }
+.faq-header p { font-size: 1rem; color: var(--cor-texto-secundario); margin: 0; }
+
+.faq-carousel-wrapper {
+  position: relative;
+  max-width: 960px;
+  margin: 0 auto;
+}
+.faq-carousel {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 90%; /* Largura de 90% para telas pequenas */
+  
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 1.5rem;
+  padding: 1rem;
+  /* Esconde a barra de scroll */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE e Edge */
+}
+.faq-carousel::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+@media (min-width: 768px) {
+  .faq-carousel {
+    grid-auto-columns: 45%; /* 2 por vez */
+  }
+}
+@media (min-width: 960px) {
+  .faq-carousel {
+    grid-auto-columns: 31%; /* 3 por vez */
+  }
+}
+
+.faq-card {
+  scroll-snap-align: start;
+  background: var(--cor-fundo); /* Fundo cinza claro nos cards */
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+.faq-card summary {
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+.faq-card summary::before { content: '+'; font-size: 1.5rem; margin-right: 0.5rem; color: var(--cor-amarela-principal); }
+.faq-card[open] summary::before { content: '−'; }
+.faq-card p { margin: 1rem 0 0 0; color: var(--cor-texto-secundario); line-height: 1.6; }
+
+/* Botões do Carrossel */
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--cor-branca);
+  border: 1px solid var(--cor-borda);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.carousel-btn.prev {
+  left: -10px;
+}
+.carousel-btn.next {
+  right: -10px;
+}

@@ -23,4 +23,7 @@ export class ClienteService {
   salvar(cliente: ClienteDTO): Observable<any> {
     return this.http.post(this.apiUrl, cliente);
   }
+  atualizar(id: number, clienteData: ClienteDTO): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, clienteData);
+  }
 }

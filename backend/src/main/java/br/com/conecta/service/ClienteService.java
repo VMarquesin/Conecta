@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.conecta.dto.ClienteResponseDTO;
 import br.com.conecta.exception.ResourceNotFoundException; 
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,15 +52,21 @@ public class ClienteService {
 
     @Transactional
     public Cliente atualizar(Integer id, ClienteDTO clienteDTO) {
+        // 1. Pega o email do usuário logado (do token JWT)
+        String emailUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
+
         Cliente clienteExistente = clienteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado com id: " + id));
 
-        clienteExistente.setNomeCompleto(clienteDTO.getNomeCompleto());
-        clienteExistente.setEmail(clienteDTO.getEmail());
-        clienteExistente.setCpf(clienteDTO.getCpf());
-        if (clienteDTO.getSenha() != null && !clienteDTO.getSenha().isEmpty()) {
-            clienteExistente.setSenhaHash(clienteDTO.getSenha());
+        // 2. VERIFICAÇÃO DE DONO
+        if (!clienteExistente.getEmail().equals(emailUsuarioLogado)) {
+            throw new AccessDeniedException("Você não tem permissão para editar o perfil de outro usuário.");
         }
+
+        // 3. Atualiza apenas os campos permitidos
+        clienteExistente.setNomeCompleto(clienteDTO.getNomeCompleto());
+        // NOTA: Email, CPF e Senha não são atualizados aqui por segurança.
+
         return clienteRepository.save(clienteExistente);
     }
 

@@ -1,29 +1,33 @@
 import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
-import { AuthService } from './services/auth'; // Verifique o caminho
+import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
+import { AuthService } from './services/auth'; // Verifique se o caminho está correto
 import { Observable } from 'rxjs';
-
-
-// 1. ADICIONE A IMPORTAÇÃO DE VOLTA
-import { CommonModule } from '@angular/common'; 
+import { CommonModule } from '@angular/common';
+import { filter } from 'rxjs/operators'; // Importação do filter
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  
-  // 2. ADICIONE O 'CommonModule' DE VOLTA AO ARRAY
-  imports: [RouterOutlet, RouterLink, CommonModule], 
-  
+  imports: [RouterOutlet, RouterLink, CommonModule],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
 })
 export class AppComponent {
   title = 'frontend';
-  
   isLoggedIn$: Observable<boolean>;
+  currentRoute: string = '';
 
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService, private router: Router) {
     this.isLoggedIn$ = this.authService.isLoggedIn$;
+
+    // CORREÇÃO AQUI:
+    // Nós precisamos usar o .pipe() para filtrar os eventos do roteador.
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(event => {
+      // Agora o currentRoute será atualizado corretamente.
+      this.currentRoute = (event as NavigationEnd).urlAfterRedirects;
+    });
   }
 
   onLogout() {

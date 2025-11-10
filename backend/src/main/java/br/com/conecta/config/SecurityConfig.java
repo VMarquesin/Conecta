@@ -49,7 +49,7 @@ public class SecurityConfig {
             .requestMatchers("/api/auth/login").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/prestadores").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/categorias").permitAll()
+            // .requestMatchers(HttpMethod.POST, "/api/categorias").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/prestadores/{prestadorId}/publicacoes").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/prestadores/{prestadorId}/avaliacoes").permitAll()
             
@@ -60,7 +60,6 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.GET, "/api/prestadores/{prestadorId}/publicacoes").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/avaliacoes/prestador/{prestadorId}").permitAll()
             
-
             .requestMatchers("/api/categorias/**").permitAll()
             // Liberação do H2 Console
             .requestMatchers("/h2-console/**").permitAll()

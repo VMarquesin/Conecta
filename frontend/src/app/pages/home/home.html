@@ -1,0 +1,76 @@
+<section class="hero-section">
+  <div class="hero-content">
+    <div class="hero-text-box">
+      <h2>Conecte-se aos melhores profissionais</h2>
+      <p>Serviços de qualidade, perto de você. Encontre o que precisa com confiança.</p>
+      <a href="#categorias" class="btn btn-primary">Encontrar Profissionais</a>
+    </div>
+  </div>
+</section>
+
+<section id="categorias" class="category-section">
+  <h3>Explore por Categoria</h3>
+  <div class="category-grid">
+    <a routerLink="/categoria/Pedreiro" class="category-card">
+      <h4>Pedreiro</h4>
+    </a>
+    <a routerLink="/categoria/Pintor" class="category-card">
+      <h4>Pintor</h4>
+    </a>
+    <a routerLink="/categoria/Eletricista" class="category-card">
+      <h4>Eletricista</h4>
+    </a>
+    <a routerLink="/categoria/Encanador" class="category-card">
+      <h4>Encanador</h4>
+    </a>
+    <a routerLink="/categoria/Carpinteiro" class="category-card">
+      <h4>Carpinteiro</h4>
+    </a>
+    <a routerLink="/categoria/Marceneiro" class="category-card">
+      <h4>Marceneiro</h4>
+    </a>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="cta-content">
+    <h3>Você é um profissional?</h3>
+    <p>Mostre seu trabalho para milhares de clientes na sua região. Cadastre-se gratuitamente.</p>
+    <a routerLink="/cadastro-prestador" class="btn btn-light">Compartilhe seu trabalho conosco!</a>
+  </div>
+</section>
+
+<section class="faq-section">
+  <div class="faq-header">
+    <h3>Dúvidas Frequentes</h3>
+  </div>
+
+  <div class="faq-carousel-wrapper">
+    <button class="carousel-btn prev" (click)="scrollFaq('prev')">&lt;</button>
+    
+    <div class="faq-carousel" #faqCarousel>
+      <details class="faq-card">
+        <summary>O que é o Conecta?</summary>
+        <p>Nosso objetivo é ser a ponte que conecta os moradores do bairro aos melhores profissionais, comerciantes e prestadores de serviço da região...</p>
+      </details>
+      <details class="faq-card">
+        <summary>O uso da plataforma é gratuito?</summary>
+        <p>Para clientes (moradores): Sim! Buscar, visualizar perfis e contatar profissionais na plataforma é e sempre será 100% gratuito. Para profissionais: O cadastro básico...</p>
+      </details>
+      <details class="faq-card">
+        <summary>Como sei se um profissional é de confiança?</summary>
+        <p>O Conecta funciona como uma vitrine de serviços locais. Você pode ver a opinião de outros moradores em nosso sistema de avaliações e comentários (reviews).</p>
+      </details>
+      <details class="faq-card">
+        <summary>Como faço para cadastrar meu negócio?</summary>
+        <p>É muito simples! Clique no link "Login" no menu superior, depois em "Cadastre-se" e selecione a opção "Quero Anunciar meu Serviço".</p>
+      </details>
+      <details class="faq-card">
+        <summary>Como os clientes entrarão em contato?</summary>
+        <p>Ao criar seu perfil, você poderá adicionar suas informações públicas de contato (telefone, WhatsApp, etc.). Os clientes verão seu perfil e entrarão em contato diretamente com você.</p>
+      </details>
+    </div>
+    
+    <button class="carousel-btn next" (click)="scrollFaq('next')">&gt;</button>
+  </div>
+</section>
