@@ -42,9 +42,6 @@ export class AvaliacaoService {
   }
 
   atualizar(avaliacaoId: number, avaliacao: AvaliacaoDTO): Observable<any> {
-    // 1. A URL está correta (como você corrigiu antes)
-    // 2. O tipo do 'avaliacao' agora é 'AvaliacaoDTO' (mais seguro)
-    // 3. Removemos o '{ observe: 'response' }'
     return this.http.put(`${this.apiUrl}/${avaliacaoId}`, avaliacao);
   }
 }

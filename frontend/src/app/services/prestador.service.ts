@@ -68,7 +68,6 @@ export class PrestadorService {
   }
 
   getAvaliacoesPorPrestador(id: number): Observable<AvaliacaoResponse[]> {
-    // CORREÇÃO: A URL agora aponta para a nova rota de avaliações do backend
     return this.http.get<AvaliacaoResponse[]>(
       `http://localhost:8080/api/avaliacoes/prestador/${id}`
     );
