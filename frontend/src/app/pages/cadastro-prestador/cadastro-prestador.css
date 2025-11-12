@@ -1,18 +1,81 @@
+/* Remove o padding padrão do host */
 :host {
   display: block;
-  /* Remove o 'height: 100vh' para que a página
-     role naturalmente com o footer */
+  width: 100%;
 }
 
-.form-container {
-  max-width: 600px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e0e0e0;
+.split-screen-container {
+  display: flex;
+  width: 100%;
+  /* CORREÇÃO 1: 
+    Usamos calc() para subtrair a altura da navbar (ex: 80px) 
+    do 100vh. Troque 80px pela altura real da sua navbar.
+  */
+  min-height: calc(100vh - 80px);
 }
+
+/* Lado Esquerdo (Imagem) */
+.split-image-side {
+  flex: 1; /* Ocupa 50% */
+  /* Você pode trocar este URL pelo seu local (assets/img/...) */
+  background-image: url('https://images.pexels.com/photos/2244746/pexels-photo-2244746.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  color: white;
+}
+/* Escurece a imagem */
+.split-image-side::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-color: rgba(0,0,0, 0.4);
+}
+.image-overlay-text {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 2rem;
+  background-color: rgba(255, 255, 255, 0.9); /* Card branco translúcido */
+  color: var(--cor-texto-principal);
+  border-radius: 8px;
+  max-width: 400px;
+}
+.image-overlay-text h2 {
+  font-size: 2rem;
+  margin: 0 0 1rem 0;
+  color: var(--cor-amarela-principal);
+  font-weight: 700;
+}
+
+/* Lado Direito (Formulário) */
+.split-form-side {
+  flex: 1; /* Ocupa 50% */
+  display: flex;
+  justify-content: center;
+  /* CORREÇÃO 2: 
+    Trocamos 'center' por 'flex-start' para alinhar 
+    o formulário ao topo da sua coluna.
+  */
+  align-items: flex-start;
+  padding: 2rem;
+  overflow-y: auto; /* Permite rolar o formulário em telas menores */
+}
+/* Removemos a borda padrão do form-container aqui */
+.split-form-side .form-container {
+  border: none;
+  box-shadow: none;
+  margin: 0;
+  width: 100%;
+  /* Adicionamos o max-width aqui, vindo do seu CSS anterior */
+  max-width: 600px; 
+}
+
+
+/* Estilos do Formulário (do seu CSS anterior) */
 .form-container h2 {
   text-align: center;
   color: #333;
@@ -84,63 +147,4 @@ button:not(:disabled):hover {
   text-align: center;
   margin-top: 1rem;
   font-weight: 600;
-}
-
-.split-screen-container {
-  display: flex;
-  width: 100%;
-  height: 100vh; /* Ocupa a altura inteira da tela */
-}
-
-/* Lado Esquerdo (Imagem) */
-.split-image-side {
-  flex: 1; /* Ocupa 50% */
-  background-image: url('https://images.pexels.com/photos/2244746/pexels-photo-2244746.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  color: white;
-}
-/* Escurece a imagem */
-.split-image-side::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background-color: rgba(0,0,0, 0.4);
-}
-.image-overlay-text {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  padding: 2rem;
-  background-color: rgba(255, 255, 255, 0.9); /* Card branco translúcido */
-  color: var(--cor-texto-principal);
-  border-radius: 8px;
-  max-width: 400px;
-}
-.image-overlay-text h2 {
-  font-size: 2rem;
-  margin: 0 0 1rem 0;
-  color: var(--cor-amarela-principal);
-  font-weight: 700;
-}
-
-/* Lado Direito (Formulário) */
-.split-form-side {
-  flex: 1; /* Ocupa 50% */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-  overflow-y: auto; /* Permite rolar o formulário em telas menores */
-}
-/* Removemos a borda padrão do form-container aqui */
-.split-form-side .form-container {
-  border: none;
-  box-shadow: none;
-  margin: 0;
-  width: 100%;
 }

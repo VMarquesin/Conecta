@@ -3,7 +3,7 @@
 
 /* 1. Definição da nossa paleta de cores (CSS Variables) */
 :root {
- --cor-amarela-principal: #FFC107; /* Um amarelo mais vibrante */
+ --cor-amarela-principal: #FFCC00; /* Um amarelo mais vibrante */
   --cor-amarela-secundaria: #f1eee3; /* Amarelo bem claro */
   --cor-texto-principal: #212529;      /* Grafite escuro (para textos) */
   --cor-texto-secundario: #777;     /* Cinza (para subtextos) */

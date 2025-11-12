@@ -1,9 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
 
 /* --- 1. Seção Hero (Fundo Branco no Texto) --- */
+/* --- https://images.pexels.com/photos/8005396/pexels-photo-8005396.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1 --- */
 .hero-section {
   height: 60vh;
-  background-image: url('https://images.pexels.com/photos/8005396/pexels-photo-8005396.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+  background-image: url("../img/image_center.svg");
   background-size: cover;
   background-position: center;
   display: flex;
