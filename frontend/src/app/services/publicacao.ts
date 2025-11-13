@@ -11,25 +11,32 @@ export interface PublicacaoDTO {
 
 @Injectable({ providedIn: 'root' })
 export class PublicacaoService {
-  // CORREÇÃO 1: A URL base deve ser a raiz da API
-  private apiUrl = 'http://localhost:8080/api';
 
-  constructor(private http: HttpClient) {}
+  // A URL base da API
+  private apiUrl = 'http://localhost:8080/api'; 
 
-  salvar(prestadorId: number, publicacao: PublicacaoDTO): Observable<any> {
-    // CORREÇÃO 2: A rota de salvar é uma sub-rota de 'prestadores'
-    return this.http.post(`${this.apiUrl}/prestadores/${prestadorId}/publicacoes`, publicacao);
+  constructor(private http: HttpClient) { }
+
+  /**
+   * Rota de Salvar (POST /api/publicacoes)
+   * O backend usa o token para identificar o prestador.
+   */
+  salvar(publicacao: PublicacaoDTO): Observable<any> {
+    // CORRIGIDO: Removido o prestadorId da chamada
+    return this.http.post(`${this.apiUrl}/publicacoes`, publicacao);
+  }
+  
+  /**
+   * Rota de Atualizar (PUT /api/publicacoes/{id})
+   */
+  atualizar(publicacaoId: number, publicacao: PublicacaoDTO): Observable<any> {
+    return this.http.put(`${this.apiUrl}/publicacoes/${publicacaoId}`, publicacao);
   }
 
-  deletar(prestadorId: number, publicacaoId: number): Observable<any> {
-    return this.http.delete(
-      `${this.apiUrl}/prestadores/${prestadorId}/publicacoes/${publicacaoId}`
-    );
-  }
-  atualizar(prestadorId: number, publicacaoId: number, publicacao: PublicacaoDTO): Observable<any> {
-    return this.http.put(
-      `${this.apiUrl}/prestadores/${prestadorId}/publicacoes/${publicacaoId}`,
-      publicacao
-    );
+  /**
+   * Rota de Deletar (DELETE /api/publicacoes/{id})
+   */
+  deletar(publicacaoId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/publicacoes/${publicacaoId}`);
   }
 }

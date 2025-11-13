@@ -1,0 +1,170 @@
+/* Container principal da página "Meu Perfil" */
+.perfil-container {
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* 1. Estilo do Acordeão (O "Botão" de Gerenciar Perfil) */
+.profile-accordion {
+  background-color: var(--cor-branca);
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  margin-bottom: 3rem;
+  overflow: hidden; 
+}
+
+/* O título clicável */
+.profile-accordion summary {
+  font-size: 1.5rem;
+  font-weight: 600;
+  padding: 1.5rem;
+  cursor: pointer;
+  list-style: none; /* Remove o marcador/seta padrão */
+  color: var(--cor-texto-principal);
+}
+
+.profile-accordion summary::before {
+  content: '► ';
+  font-size: 0.8em;
+  margin-right: 0.5rem;
+  color: var(--cor-amarela-principal);
+  transition: transform 0.2s;
+  display: inline-block; 
+}
+.profile-accordion[open] summary::before {
+  transform: rotate(90deg);
+}
+.profile-accordion[open] summary {
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.profile-accordion .form-container {
+  border: none;
+  box-shadow: none;
+  margin: 0;
+  padding-top: 1.5rem; 
+}
+
+/* 2. Estilo do Título "Meu Portfólio" (Centralizado) */
+.section h3 {
+  text-align: center;
+  font-weight: 600;
+  color: var(--cor-texto-secundario);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 1.2rem;
+  border-bottom: 1px solid var(--cor-borda);
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* 3. Estilo do "Box das Publicações" (Grid estilo Instagram) */
+.publicacoes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Card de Publicação */
+.pub-card {
+  position: relative;
+  background-color: var(--cor-branca);
+  border: 1px solid var(--cor-borda);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  /* Nova altura mínima fixa para o card */
+  min-height: 400px; /* Ajuste conforme necessário para o conteúdo */
+  max-height: 400px; /* Garante que o card não cresça mais que isso */
+}
+
+/* Imagem da Publicação */
+.pub-card img {
+  width: 100%;
+  height: 200px; /* Altura fixa para a imagem */
+  object-fit: cover; /* Recorta a imagem para caber sem distorcer */
+  background-color: #eee;
+  flex-shrink: 0; /* Impede a imagem de encolher */
+}
+
+/* Placeholder quando não há foto */
+.no-photo-placeholder {
+  width: 100%;
+  height: 200px; /* Mesma altura da imagem */
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  font-style: italic;
+  flex-shrink: 0;
+}
+
+.pub-card h4 {
+  font-size: 1rem;
+  padding: 0.5rem 1rem 0 1rem;
+  margin: 0;
+  color: var(--cor-texto-principal);
+}
+
+.pub-card p {
+  font-size: 0.9rem;
+  padding: 0 1rem 0.5rem 1rem;
+  color: var(--cor-texto-secundario);
+  line-height: 1.5;
+  
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Limita a 3 linhas */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  
+  min-height: calc(1.5 * 3 * 0.9rem); 
+  flex-grow: 1; /* Empurra o <small> para baixo */
+}
+
+.pub-card small {
+  display: block;
+  font-size: 0.8rem;
+  color: #ccc;
+  padding: 0 1rem 1rem 1rem;
+  margin-top: auto; /* Garante que a data fique sempre embaixo */
+}
+
+/* --- A CORREÇÃO PARA "BOTÕES COM ÍCONES" --- */
+.btn-delete, .btn-edit {
+  position: absolute;
+  top: 0.5rem;
+  width: 32px; /* Aumenta um pouco para o ícone */
+  height: 32px;
+  line-height: 32px; /* Centraliza o ícone verticalmente */
+  font-size: 1.1rem; /* Tamanho do ícone */
+  background-color: rgba(255, 0, 0, 0.7); /* Fundo vermelho translúcido */
+  color: white;
+  border: none;
+  border-radius: 50%; /* Faz o botão ficar redondo */
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.7;
+  transition: all 0.2s;
+  z-index: 10;
+  display: flex; /* Para centralizar o ícone */
+  align-items: center; /* Centraliza verticalmente */
+  justify-content: center; /* Centraliza horizontalmente */
+}
+.btn-delete:hover, .btn-edit:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+.btn-delete {
+  right: 0.5rem; /* Posição à direita */
+}
+.btn-edit {
+  right: 2.8rem; /* Posição à esquerda do delete */
+  background-color: rgba(0, 123, 255, 0.7); /* Fundo azul translúcido */
+}
+/* --- FIM DA CORREÇÃO --- */

@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.access.AccessDeniedException;
 // import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.core.context.SecurityContextHolder; // Este é usado
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 
@@ -28,36 +28,25 @@ public class PublicacaoService {
     // --- MÉTODO DE CRIAÇÃO ---
     // (Este método está correto)
     @Transactional
-public Publicacao criar(Integer prestadorId, PublicacaoDTO publicacaoDTO) {
+public Publicacao criar(PublicacaoDTO publicacaoDTO) { // 1. Removido o 'prestadorId'
     
-    // --- INÍCIO DA CORREÇÃO DE SEGURANÇA ---
-
-    // 1. Pegue o email do usuário logado (do token JWT)
+    // 2. Pega o email do usuário logado (do token JWT)
     String emailUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
 
-    // 2. Busque o Prestador LOGADO
+    // 3. Busca o Prestador que está logado
     Prestador prestadorLogado = prestadorRepository.findByEmail(emailUsuarioLogado)
-            .orElseThrow(() -> new UsernameNotFoundException("Prestador não encontrado com o email: " + emailUsuarioLogado));
-    
-    // 3. VERIFICAÇÃO DE DONO (OPCIONAL, MAS RECOMENDADA)
-    // O usuário logado está tentando postar na sua própria página de perfil?
-    // (O prestadorId da URL deve ser o mesmo do prestador logado)
-    if (!prestadorLogado.getId().equals(prestadorId)) {
-        throw new AccessDeniedException("Você não pode criar uma publicação no perfil de outro prestador.");
-    }
-    // --- FIM DA CORREÇÃO DE SEGURANÇA ---
+            .orElseThrow(() -> new UsernameNotFoundException("Somente um Prestador logado pode criar publicações."));
 
     Publicacao publicacao = new Publicacao();
     publicacao.setTitulo(publicacaoDTO.getTitulo());
     publicacao.setDescricao(publicacaoDTO.getDescricao());
     publicacao.setFotoUrl(publicacaoDTO.getFotoUrl());
     
-    // 4. Associa a publicação ao PRESTADOR LOGADO (e não ao ID da URL)
-    publicacao.setPrestador(prestadorLogado); 
+    // 4. Associa a publicação ao Prestador DONO DO TOKEN
+    publicacao.setPrestador(prestadorLogado);
 
     return publicacaoRepository.save(publicacao);
 }
-
     // --- MÉTODO DE LEITURA ---
     // (Este método está correto)
     @Transactional(readOnly = true)
@@ -90,28 +79,19 @@ public Publicacao criar(Integer prestadorId, PublicacaoDTO publicacaoDTO) {
     }
 
     @Transactional
-    public void deletar(Integer publicacaoId) {
+public void deletar(Integer publicacaoId) {
+    
+    // 1. ESTA É A FORMA CORRETA de pegar o email do token:
+    String emailUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String emailUsuarioLogado;
+    Publicacao publicacao = publicacaoRepository.findById(publicacaoId)
+            .orElseThrow(() -> new ResourceNotFoundException("Publicação não encontrada: " + publicacaoId));
 
-        if (principal instanceof org.springframework.security.core.userdetails.UserDetails userDetails) {
-            emailUsuarioLogado = userDetails.getUsername();
-        } else {
-            emailUsuarioLogado = principal.toString(); // <-- aqui pega o "sub" do JWT
-        }
-
-        System.out.println("EMAIL DO TOKEN: " + emailUsuarioLogado);
-
-        Publicacao publicacao = publicacaoRepository.findById(publicacaoId)
-                .orElseThrow(() -> new ResourceNotFoundException("Publicação não encontrada: " + publicacaoId));
-
-        System.out.println("EMAIL DO DONO DA PUBLICAÇÃO: " + publicacao.getPrestador().getEmail());
-
-        if (!publicacao.getPrestador().getEmail().equals(emailUsuarioLogado)) {
-            throw new AccessDeniedException("Você não tem permissão para deletar esta publicação.");
-        }
-
-        publicacaoRepository.delete(publicacao);
+    // 2. A verificação agora vai funcionar
+    if (!publicacao.getPrestador().getEmail().equals(emailUsuarioLogado)) {
+        throw new AccessDeniedException("Você não tem permissão para deletar esta publicação.");
     }
+
+    publicacaoRepository.delete(publicacao);
+}
 }

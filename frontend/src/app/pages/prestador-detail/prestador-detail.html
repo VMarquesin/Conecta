@@ -1,152 +1,94 @@
 <div class="profile-container">
+
   @if (prestador$ | async; as prestador) {
-  <div class="profile-header">
-    <h2>{{ prestador.nomeCompleto }}</h2>
-    <p class="fantasia">{{ prestador.nomeFantasia }}</p>
-    <p class="bio">{{ prestador.bio }}</p>
-    <p class="contato">Contato: {{ prestador.email }}</p>
-  </div>
+    <div class="profile-header">
+      <h2>{{ prestador.nomeCompleto }}</h2>
+      <p class="fantasia">{{ prestador.nomeFantasia }}</p>
+      <p class="bio">{{ prestador.bio }}</p>
+      <p class="contato">Contato: {{ prestador.email }}</p>
+    </div>
   } @else {
-  <p>Carregando perfil...</p>
+    <p>Carregando perfil...</p>
   }
 
   <div class="section">
     <h3>Portfólio (Publicações)</h3>
-
-    @if (isLoggedIn$ | async) { @if (authService.hasRole('ROLE_PRESTADOR')) {
-    <div class="form-container" style="margin-bottom: 2rem; background-color: #f9f9f9">
-      <h4>{{ editandoPublicacaoId ? 'Editar Publicação' : 'Adicionar Novo Item ao Portfólio' }}</h4>
-
-      <form [formGroup]="publicacaoForm" (ngSubmit)="onPostarPublicacao()">
-        <div class="form-group">
-          <label for="titulo">Título</label>
-          <input id="titulo" type="text" formControlName="titulo" />
-          @if (publicacaoForm.get('titulo')?.invalid && publicacaoForm.get('titulo')?.touched) {
-          <div class="error-message">Título é obrigatório.</div>
-          }
-        </div>
-        <div class="form-group">
-          <label for="descricao">Descrição</label>
-          <textarea id="descricao" formControlName="descricao" rows="3"></textarea>
-          @if (publicacaoForm.get('descricao')?.invalid && publicacaoForm.get('descricao')?.touched)
-          {
-          <div class="error-message">Descrição é obrigatória.</div>
-          }
-        </div>
-        <div class="form-group">
-          <label for="fotoUrl">URL da Foto (opcional)</label>
-          <input
-            id="fotoUrl"
-            type="text"
-            formControlName="fotoUrl"
-            placeholder="http://exemplo.com/imagem.png"
-          />
-        </div>
-        <button type="submit" [disabled]="publicacaoForm.invalid">
-          {{ editandoPublicacaoId ? 'Salvar alterações' : 'Postar' }}
-        </button>
-        @if (editandoPublicacaoId) {
-        <button type="button" class="btn-cancel" (click)="cancelarEdicao()">Cancelar edição</button>
-        } @if (mensagemSucessoPublicacao) {
-        <div class="success-message">{{ mensagemSucessoPublicacao }}</div>
-        }
-      </form>
-    </div>
-    } }
-
+    
     <div class="publicacoes-grid">
       @for (pub of (publicacoes$ | async); track pub.id) {
-      <div class="pub-card">
-        @if (authService.isLoggedIn$ | async) { @if (authService.hasRole('ROLE_PRESTADOR')) {
-        <button type="button" class="btn-delete" (click)="onDeletarPublicacao(pub.id)">X</button>
+        <div class="pub-card">
+          
+          @if(pub.fotoUrl) {
+            <img [src]="pub.fotoUrl" alt="Foto da Publicação" />
+          }
+          <h4>{{ pub.titulo }}</h4>
+          <p>{{ pub.descricao }}</p>
+          <small>{{ pub.dataPublicacao | date : 'dd/MM/yyyy' }}</small>
 
-        <button type="button" class="btn-edit" (click)="onCarregarParaEditar(pub)">Editar</button>
+          @if (isLoggedIn$ | async) {
+            @if (authService.hasRole('ROLE_CLIENTE')) {
+              <button class="btn-avaliar-pub" (click)="toggleAvaliacaoPublicacao(pub.id)">
+                @if (publicacaoAbertaParaAvaliar === pub.id) {
+                  Fechar Avaliação
+                } @else {
+                  Avaliar Publicação
+                }
+              </button>
+            }
+          }
 
-        } } @if(pub.fotoUrl) {
-        <img [src]="pub.fotoUrl" alt="Foto da Publicação" />
-        }
-        <h4>{{ pub.titulo }}</h4>
-        <p>{{ pub.descricao }}</p>
-        <small>{{ pub.dataPublicacao | date : 'dd/MM/yyyy' }}</small>
-      </div>
+          @if (publicacaoAbertaParaAvaliar === pub.id) {
+            <form [formGroup]="pubAvaliacaoForm" (ngSubmit)="onPostarAvaliacaoPublicacao(pub.id)" class="form-container-inline">
+              </form>
+          }
+        </div>
       } @empty {
-      <p>Este prestador ainda não tem publicações.</p>
+        <p>Este prestador ainda não tem publicações.</p>
       }
     </div>
   </div>
 
   <div class="section">
-    <h3>Avaliações</h3>
+    <h3>Avaliações do Prestador</h3>
     <div class="avaliacoes-list">
       @for (aval of (avaliacoes$ | async); track aval.id) {
-      <div class="aval-card">
-        @if (isLoggedIn$ | async) { @if (authService.hasRole('ROLE_CLIENTE')) {
-        <button class="btn-delete" (click)="onDeletarAvaliacao(aval.id)">X</button>
-        <button class="btn-edit" (click)="onCarregarAvaliacaoParaEditar(aval)">Editar</button>
-        } }
-        <div class="nota">Nota: {{ aval.nota }} / 5</div>
-        <p>"{{ aval.comentario }}"</p>
-        <small>- {{ aval.nomeCliente }} em {{ aval.dataAvaliacao | date : 'dd/MM/yyyy' }}</small>
-      </div>
+        <div class="aval-card">
+          @if (isLoggedIn$ | async) { @if (authService.hasRole('ROLE_CLIENTE')) {
+            <button class="btn-delete" (click)="onDeletarAvaliacao(aval.id)">X</button>
+            <button class="btn-edit" (click)="onCarregarAvaliacaoParaEditar(aval)">Editar</button>
+          }}
+          <div class="nota">Nota: {{ aval.nota }} / 5</div>
+          <p>"{{ aval.comentario }}"</p>
+          <small>- {{ aval.nomeCliente }} em {{ aval.dataAvaliacao | date : 'dd/MM/yyyy' }}</small>
+        </div>
       } @empty {
-      <p>Este prestador ainda não foi avaliado.</p>
+        <p>Este prestador ainda não foi avaliado.</p>
       }
     </div>
   </div>
 
   <div class="section form-container">
     @if (isLoggedIn$ | async) { @if (authService.hasRole('ROLE_CLIENTE')) {
-
-    <h3>
-      {{ editandoAvaliacaoId ? 'Editar Avaliação' : 'Deixe sua Avaliação (para o Prestador)' }}
-    </h3>
-
-    <form [formGroup]="avaliacaoForm" (ngSubmit)="onPostarAvaliacao()">
-      @if (!editandoAvaliacaoId) {
-      <div class="form-group">
-        <label for="clienteId">Seu ID de Cliente (para teste)</label>
-        <input id="clienteId" type="number" formControlName="clienteId" />
-      </div>
-      }
-
-      <div class="form-group">
-        <label for="nota">Nota (de 1 a 5)</label>
-        <select id="nota" formControlName="nota">
-          <option value="5">5 Estrelas</option>
-          <option value="4">4 Estrelas</option>
-          <option value="3">3 Estrelas</option>
-          <option value="2">2 Estrelas</option>
-          <option value="1">1 Estrela</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="comentario">Comentário</label>
-        <textarea id="comentario" formControlName="comentario" rows="4"></textarea>
-      </div>
-
-      <button type="submit" [disabled]="avaliacaoForm.invalid">
-        {{ editandoAvaliacaoId ? 'Salvar Alterações' : 'Postar Avaliação' }}
-      </button>
-
-      @if (editandoAvaliacaoId) {
-      <button type="button" class="btn-cancel" (click)="cancelarEdicaoAvaliacao()">Cancelar</button>
-      } @if (mensagemSucesso) {
-      <div class="success-message">{{ mensagemSucesso }}</div>
-      }
-    </form>
-
-    } @else {
-
-    <p>Você precisa ser cliente para avaliar.</p>
-
+      <h3>
+        {{ editandoAvaliacaoId ? 'Editar Avaliação' : 'Deixe sua Avaliação (para o Prestador)' }}
+      </h3>
+      <form [formGroup]="avaliacaoForm" (ngSubmit)="onPostarAvaliacao()">
+        
+        <button type="submit" [disabled]="avaliacaoForm.invalid">
+          {{ editandoAvaliacaoId ? 'Salvar Alterações' : 'Postar Avaliação' }}
+        </button>
+        @if (editandoAvaliacaoId) {
+          <button type="button" class="btn-cancel" (click)="cancelarEdicaoAvaliacao()">Cancelar</button>
+        } 
+        @if (mensagemSucesso) {
+          <div class="success-message">{{ mensagemSucesso }}</div>
+        }
+      </form>
     } } @else {
-
-    <p>
-      Você precisa estar logado para deixar uma avaliação.
-      <a routerLink="/login">Faça o login aqui.</a>
-    </p>
-
+      <p>
+        Você precisa estar logado para deixar uma avaliação.
+        <a routerLink="/login">Faça o login aqui.</a>
+      </p>
     }
   </div>
 </div>
