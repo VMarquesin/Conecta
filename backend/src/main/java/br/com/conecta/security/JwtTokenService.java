@@ -42,11 +42,7 @@ public class JwtTokenService {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(now)
-                
-                // 4. ADICIONA A NOVA INFORMAÇÃO (CLAIM)
-                // Estamos "carimbando" o token com os papéis do usuário.
                 .claim("roles", roles) 
-                
                 .expiration(expiryDate)
                 .signWith(getSigningKey())
                 .compact();

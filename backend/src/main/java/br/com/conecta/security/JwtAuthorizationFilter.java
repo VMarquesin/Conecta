@@ -37,7 +37,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             String jwt = getJwtFromRequest(request);
 
             // Valida o token
-            if (StringUtils.hasText(jwt) && jwtTokenService.validateToken(jwt)) {
+            if (StringUtils.hasText(jwt) && jwtTokenService.vaSSlidateToken(jwt)) {
                 
                 // Se for válido, extrai o email
                 String email = jwtTokenService.getUsernameFromToken(jwt);
@@ -51,15 +51,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // Define o usuário como logado para esta requisição
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception ex) {
-            // Se algo der errado (token inválido, etc.), registra o erro
             logger.error("Não foi possível definir a autenticação do usuário", ex);
         }
 
-        // Passa a requisição para o próximo filtro
         filterChain.doFilter(request, response);
     }
 
@@ -68,8 +65,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
      */
     private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-        
-        // O cabeçalho deve ser: "Bearer [token]"
+
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7); 
         }

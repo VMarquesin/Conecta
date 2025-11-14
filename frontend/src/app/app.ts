@@ -19,13 +19,9 @@ export class AppComponent {
 
   constructor(private authService: AuthService, private router: Router) {
     this.isLoggedIn$ = this.authService.isLoggedIn$;
-
-    // CORREÇÃO AQUI:
-    // Nós precisamos usar o .pipe() para filtrar os eventos do roteador.
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(event => {
-      // Agora o currentRoute será atualizado corretamente.
       this.currentRoute = (event as NavigationEnd).urlAfterRedirects;
     });
   }

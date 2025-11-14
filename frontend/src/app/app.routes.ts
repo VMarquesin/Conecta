@@ -11,14 +11,9 @@ import { MeuPerfilComponent } from './pages/meu-perfil/meu-perfil';
 import { authGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
-  // 2. A Rota Principal (Homepage)
   { path: '', component: HomeComponent, pathMatch: 'full' },
-  
-  // 3. A Lista de Prestadores (para onde os links de categoria vão apontar)
-  { path: 'prestadores', component: PrestadorListComponent }, // <-- Rota para todos
-  { path: 'categoria/:nome', component: PrestadorListComponent }, // <-- Rota para filtrados
-  
-  // 4. As rotas que já tínhamos
+  { path: 'prestadores', component: PrestadorListComponent }, 
+  { path: 'categoria/:nome', component: PrestadorListComponent },
   { path: 'prestador/:id', component: PrestadorDetailComponent },
   { path: 'cadastro', component: CadastroClienteComponent },
   { path: 'cadastro-prestador', component: CadastroPrestadorComponent },
