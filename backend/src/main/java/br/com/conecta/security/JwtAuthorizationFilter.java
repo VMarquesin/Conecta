@@ -37,7 +37,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             String jwt = getJwtFromRequest(request);
 
             // Valida o token
-            if (StringUtils.hasText(jwt) && jwtTokenService.vaSSlidateToken(jwt)) {
+            if (StringUtils.hasText(jwt) && jwtTokenService.validateToken(jwt)) {
                 
                 // Se for válido, extrai o email
                 String email = jwtTokenService.getUsernameFromToken(jwt);
