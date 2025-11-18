@@ -9,6 +9,7 @@ public class PrestadorDTO {
 
     @NotBlank(message = "O nome completo não pode estar em branco.")
     private String nomeCompleto;
+    
     private String nomeFantasia;
 
     @NotBlank(message = "O email não pode estar em branco.")

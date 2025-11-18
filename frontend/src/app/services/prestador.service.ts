@@ -64,7 +64,10 @@ export class PrestadorService {
   }
 
   getPublicacoesPorPrestador(id: number): Observable<Publicacao[]> {
-    return this.http.get<Publicacao[]>(`${this.apiUrl}/${id}/publicacoes`);
+    // CORREÇÃO: Apontar para o PublicacaoController (/api/publicacoes/...)
+    // Antes estava: `${this.apiUrl}/${id}/publicacoes` (que virava /api/prestadores/1/publicacoes)
+    
+    return this.http.get<Publicacao[]>(`http://localhost:8080/api/publicacoes/prestador/${id}`);
   }
 
   getAvaliacoesPorPrestador(id: number): Observable<AvaliacaoResponse[]> {

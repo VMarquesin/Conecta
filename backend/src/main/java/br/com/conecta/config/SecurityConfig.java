@@ -50,8 +50,7 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/prestadores").permitAll()
             // .requestMatchers(HttpMethod.POST, "/api/categorias").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/prestadores/{prestadorId}/publicacoes").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/prestadores/{prestadorId}/avaliacoes").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/publicacoes/prestador/**").permitAll()
             
             // Liberação de rotas de LEITURA PÚBLICA (GET)
             .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
