@@ -45,6 +45,9 @@ public class AvaliacaoService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String emailDoUsuarioLogado = authentication.getName(); // Isso nos dá o email
 
+        if (avaliacaoRepository.existsByPrestadorIdAndClienteEmail(prestadorId, emailDoUsuarioLogado)){
+            throw new RuntimeException("Você já avaliou este prestador. Edite sua avaliação anterior.");
+        }
         // 3. BUSCAR O CLIENTE PELO EMAIL
         // (Não podemos mais confiar no clienteId que vem do DTO)
         Cliente cliente = clienteRepository.findByEmail(emailDoUsuarioLogado)
@@ -65,62 +68,67 @@ public class AvaliacaoService {
     
     @Transactional
     public Avaliacao criarParaPublicacao(Integer publicacaoId, AvaliacaoDTO avaliacaoDTO) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String emailDoUsuarioLogado = authentication.getName();
-
-        Cliente cliente = clienteRepository.findByEmail(emailDoUsuarioLogado)
-                .orElseThrow(() -> new UsernameNotFoundException("Cliente não encontrado"));
-
-        Publicacao publicacao = publicacaoRepository.findById(publicacaoId)
-                .orElseThrow(() -> new ResourceNotFoundException("Publicação não encontrada"));
-
-        Avaliacao avaliacao = new Avaliacao();
-        avaliacao.setNota(avaliacaoDTO.getNota());
-        avaliacao.setComentario(avaliacaoDTO.getComentario());
-        avaliacao.setCliente(cliente);
-        avaliacao.setPublicacao(publicacao); 
-
-        return avaliacaoRepository.save(avaliacao);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String emailDoUsuarioLogado = authentication.getName();
+            
+            Cliente cliente = clienteRepository.findByEmail(emailDoUsuarioLogado)
+                    .orElseThrow(() -> new UsernameNotFoundException("Cliente não encontrado"));
+            
+            Publicacao publicacao = publicacaoRepository.findById(publicacaoId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Publicação não encontrada"));
+            
+            Avaliacao avaliacao = new Avaliacao();
+            avaliacao.setNota(avaliacaoDTO.getNota());
+            avaliacao.setComentario(avaliacaoDTO.getComentario());
+            avaliacao.setCliente(cliente);
+            
+            // VINCULA À PUBLICAÇÃO
+            avaliacao.setPublicacao(publicacao); 
+            
+            // IMPORTANTE: VINCULA TAMBÉM AO PRESTADOR (DONO DA PUBLICAÇÃO)
+            // Isso garante que o dado fique consistente no banco
+            avaliacao.setPrestador(publicacao.getPrestador()); 
+            
+            return avaliacaoRepository.save(avaliacao);
     }
 
     // Dentro da classe AvaliacaoService.java
 
-@Transactional
-public Avaliacao atualizar(Integer avaliacaoId, AvaliacaoDTO avaliacaoDTO) {
-    String emailUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
+    @Transactional
+    public Avaliacao atualizar(Integer avaliacaoId, AvaliacaoDTO avaliacaoDTO) {
+        String emailUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
 
-    Avaliacao avaliacao = avaliacaoRepository.findById(avaliacaoId)
-            .orElseThrow(() -> new ResourceNotFoundException("Avaliação não encontrada"));
+        Avaliacao avaliacao = avaliacaoRepository.findById(avaliacaoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Avaliação não encontrada"));
 
-    // VERIFICAÇÃO DE DONO
-    if (!avaliacao.getCliente().getEmail().equals(emailUsuarioLogado)) {
-        throw new AccessDeniedException("Você não tem permissão para editar esta avaliação.");
+        // VERIFICAÇÃO DE DONO
+        if (!avaliacao.getCliente().getEmail().equals(emailUsuarioLogado)) {
+            throw new AccessDeniedException("Você não tem permissão para editar esta avaliação.");
+        }
+
+        // Se for o dono, atualiza
+        avaliacao.setNota(avaliacaoDTO.getNota());
+        avaliacao.setComentario(avaliacaoDTO.getComentario());
+        return avaliacaoRepository.save(avaliacao);
     }
 
-    // Se for o dono, atualiza
-    avaliacao.setNota(avaliacaoDTO.getNota());
-    avaliacao.setComentario(avaliacaoDTO.getComentario());
-    return avaliacaoRepository.save(avaliacao);
-}
+    @Transactional
+    public void deletar(Integer avaliacaoId) {
+        String emailUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
 
-@Transactional
-public void deletar(Integer avaliacaoId) {
-    String emailUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
+        Avaliacao avaliacao = avaliacaoRepository.findById(avaliacaoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Avaliação não encontrada"));
 
-    Avaliacao avaliacao = avaliacaoRepository.findById(avaliacaoId)
-            .orElseThrow(() -> new ResourceNotFoundException("Avaliação não encontrada"));
+        // VERIFICAÇÃO DE DONO
+        if (!avaliacao.getCliente().getEmail().equals(emailUsuarioLogado)) {
+            throw new AccessDeniedException("Você não tem permissão para deletar esta avaliação.");
+        }
 
-    // VERIFICAÇÃO DE DONO
-    if (!avaliacao.getCliente().getEmail().equals(emailUsuarioLogado)) {
-        throw new AccessDeniedException("Você não tem permissão para deletar esta avaliação.");
+        // Se for o dono, deleta
+        avaliacaoRepository.delete(avaliacao);
     }
-
-    // Se for o dono, deleta
-    avaliacaoRepository.delete(avaliacao);
-}
     @Transactional(readOnly = true)
     public List<AvaliacaoResponseDTO> listarPorPrestador(Integer prestadorId) {
-        // 1. Busca as entidades do banco
         List<Avaliacao> avaliacoes = avaliacaoRepository.findByPrestadorId(prestadorId);
 
         // 2. Converte a lista de Entidades para uma lista de DTOs

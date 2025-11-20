@@ -11,6 +11,7 @@ import br.com.conecta.exception.ResourceNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import br.com.conecta.dto.PerfilUpdateDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,22 +51,28 @@ public class ClienteService {
         return clienteRepository.save(cliente);
     }
 
+    // Dentro de ClienteService.java
+
     @Transactional
-    public Cliente atualizar(Integer id, ClienteDTO clienteDTO) {
-        // 1. Pega o email do usuário logado (do token JWT)
+    public Cliente atualizarPerfil(Integer id, PerfilUpdateDTO perfilDTO) {
+        // 1. Pega o email do usuário logado (do token)
         String emailUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
 
+        // 2. Busca o cliente no banco
         Cliente clienteExistente = clienteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado com id: " + id));
 
-        // 2. VERIFICAÇÃO DE DONO
+        // 3. VERIFICAÇÃO DE DONO (Segurança)
         if (!clienteExistente.getEmail().equals(emailUsuarioLogado)) {
             throw new AccessDeniedException("Você não tem permissão para editar o perfil de outro usuário.");
         }
 
-        // 3. Atualiza apenas os campos permitidos
-        clienteExistente.setNomeCompleto(clienteDTO.getNomeCompleto());
-        // NOTA: Email, CPF e Senha não são atualizados aqui por segurança.
+        // 4. Atualiza apenas os campos permitidos (Nome)
+        // (Clientes no nosso sistema por enquanto só editam o nome no perfil básico)
+        clienteExistente.setNomeCompleto(perfilDTO.getNomeCompleto());
+        
+        // Se quiser permitir editar outros campos no futuro (como telefone), adicione aqui.
+        // Não atualizamos senha, email ou CPF aqui.
 
         return clienteRepository.save(clienteExistente);
     }

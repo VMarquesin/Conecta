@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import br.com.conecta.dto.ClienteResponseDTO;
+import br.com.conecta.dto.PerfilUpdateDTO;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -37,10 +38,14 @@ public class ClienteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> atualizar(@PathVariable Integer id, @Valid @RequestBody ClienteDTO clienteDTO) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<Cliente> atualizar(
+            @PathVariable Integer id, 
+            @Valid @RequestBody PerfilUpdateDTO perfilDTO) { // <-- Usa o DTO seguro
+        
+        // Chama o novo método que vamos criar no service
+        Cliente clienteAtualizado = clienteService.atualizarPerfil(id, perfilDTO);
+        return ResponseEntity.ok(clienteAtualizado);
     }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Integer id) {
         try {
