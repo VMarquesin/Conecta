@@ -16,12 +16,7 @@
     <div class="publicacoes-grid">
       @for (pub of (publicacoes$ | async); track pub.id) {
       <div class="pub-card">
-        @if (authService.isLoggedIn$ | async) { @if (authService.hasRole('ROLE_PRESTADOR')) {
-        <button type="button" class="btn-delete" (click)="onDeletarPublicacao(pub.id)">
-          &#10006;
-        </button>
-        <button type="button" class="btn-edit" (click)="onCarregarParaEditar(pub)">&#9998;</button>
-        } } @if(pub.fotoUrl) {
+        @if(pub.fotoUrl) {
         <img [src]="pub.fotoUrl" alt="Foto da Publicação" />
         } @else {
         <div class="no-photo-placeholder">Sem Imagem</div>

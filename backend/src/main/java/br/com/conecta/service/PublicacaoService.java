@@ -79,19 +79,19 @@ public Publicacao criar(PublicacaoDTO publicacaoDTO) { // 1. Removido o 'prestad
     }
 
     @Transactional
-public void deletar(Integer publicacaoId) {
-    
-    // 1. ESTA É A FORMA CORRETA de pegar o email do token:
-    String emailUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
+    public void deletar(Integer publicacaoId) {
+        
+        // 1. ESTA É A FORMA CORRETA de pegar o email do token:
+        String emailUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
 
-    Publicacao publicacao = publicacaoRepository.findById(publicacaoId)
-            .orElseThrow(() -> new ResourceNotFoundException("Publicação não encontrada: " + publicacaoId));
+        Publicacao publicacao = publicacaoRepository.findById(publicacaoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Publicação não encontrada: " + publicacaoId));
 
-    // 2. A verificação agora vai funcionar
-    if (!publicacao.getPrestador().getEmail().equals(emailUsuarioLogado)) {
-        throw new AccessDeniedException("Você não tem permissão para deletar esta publicação.");
+        // 2. A verificação agora vai funcionar
+        if (!publicacao.getPrestador().getEmail().equals(emailUsuarioLogado)) {
+            throw new AccessDeniedException("Você não tem permissão para deletar esta publicação.");
+        }
+
+        publicacaoRepository.delete(publicacao);
     }
-
-    publicacaoRepository.delete(publicacao);
-}
 }

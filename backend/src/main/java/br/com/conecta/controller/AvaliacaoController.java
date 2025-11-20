@@ -57,11 +57,12 @@ public class AvaliacaoController {
     // CORREÇÃO: A rota agora precisa do prestadorId
     // Dentro da classe AvaliacaoController.java
 
-    @PutMapping("/{avaliacaoId}")
+   @PutMapping("/{avaliacaoId}") 
     public ResponseEntity<Avaliacao> atualizar(
             @PathVariable Integer avaliacaoId,
             @RequestBody AvaliacaoDTO avaliacaoDTO) {
-
+        
+        // CORREÇÃO: Chamamos o serviço sem passar o prestadorId
         Avaliacao avaliacaoAtualizada = avaliacaoService.atualizar(avaliacaoId, avaliacaoDTO);
         return ResponseEntity.ok(avaliacaoAtualizada);
     }

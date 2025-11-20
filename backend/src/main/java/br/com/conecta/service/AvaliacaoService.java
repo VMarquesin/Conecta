@@ -103,6 +103,7 @@ public class AvaliacaoService {
 
         // VERIFICAÇÃO DE DONO
         if (!avaliacao.getCliente().getEmail().equals(emailUsuarioLogado)) {
+            System.out.println("!!! ACESSO NEGADO: Emails não batem !!!");
             throw new AccessDeniedException("Você não tem permissão para editar esta avaliação.");
         }
 

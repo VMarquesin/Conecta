@@ -4,16 +4,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable, switchMap, BehaviorSubject } from 'rxjs';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
-// Nossos Serviços e Interfaces
-import {
-  Prestador,
-  PrestadorService,
-  Publicacao,
-  AvaliacaoResponse,
-} from '../../services/prestador.service';
+import { Prestador, PrestadorService, Publicacao, AvaliacaoResponse } from '../../services/prestador.service';
 import { AvaliacaoService } from '../../services/avaliacao';
 import { AuthService } from '../../services/auth';
-// O PublicacaoService não é mais necessário aqui
 
 @Component({
   selector: 'app-prestador-detail',
@@ -23,46 +16,36 @@ import { AuthService } from '../../services/auth';
   styleUrl: './prestador-detail.css',
 })
 export class PrestadorDetailComponent implements OnInit {
-  // Observables para os dados da página (sem publicações, pois está no prestadorService)
+  
+  // Dados da Página
   prestador$!: Observable<Prestador>;
   publicacoes$!: Observable<Publicacao[]>;
   avaliacoes$!: Observable<AvaliacaoResponse[]>;
 
-  // BehaviorSubjects para forçar o "refresh"
+  // Refresh da lista de avaliações
   private refreshAvaliacoes = new BehaviorSubject<void>(undefined);
-  private refreshPublicacoes = new BehaviorSubject<void>(undefined);
-  // O refreshPublicacoes não é mais necessário aqui
 
   isLoggedIn$: Observable<boolean>;
-
-  // Formulários de Avaliação
+  
+  // Formulário de Avaliação (DO PRESTADOR)
   avaliacaoForm: FormGroup;
-  pubAvaliacaoForm: FormGroup;
-
+  
   // Variáveis de estado
   prestadorId: number = 0;
   mensagemSucesso: string = '';
   editandoAvaliacaoId: number | null = null;
-  publicacaoAbertaParaAvaliar: number | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private prestadorService: PrestadorService,
     private avaliacaoService: AvaliacaoService,
-    // O PublicacaoService foi removido
     public authService: AuthService,
     private fb: FormBuilder
   ) {
-    // Avaliação do PRESTADOR
+    // Inicializa APENAS o formulário de avaliação do prestador
     this.avaliacaoForm = this.fb.group({
       nota: [5, Validators.required],
-      comentario: [null],
-    });
-
-    // Avaliação da PUBLICACAO
-    this.pubAvaliacaoForm = this.fb.group({
-      nota: [5, Validators.required],
-      comentario: ['', Validators.required],
+      comentario: ['', Validators.required], // Validador adicionado
     });
 
     this.isLoggedIn$ = this.authService.isLoggedIn$;
@@ -74,8 +57,8 @@ export class PrestadorDetailComponent implements OnInit {
 
     if (this.prestadorId > 0) {
       this.prestador$ = this.prestadorService.getPrestadorById(this.prestadorId);
-
-      // A busca de publicações (leitura) ainda é necessária
+      
+      // Apenas busca as publicações (sem refresh, pois é read-only)
       this.publicacoes$ = this.prestadorService.getPublicacoesPorPrestador(this.prestadorId);
 
       this.avaliacoes$ = this.refreshAvaliacoes.pipe(
@@ -84,13 +67,7 @@ export class PrestadorDetailComponent implements OnInit {
     }
   }
 
-  // ---------------------------------------------------
-  // APENAS MÉTODOS DE AVALIAÇÃO FICAM AQUI
-  // ---------------------------------------------------
-
-  // Método para postar avaliação do PRESTADOR
-
-  // Postar avaliação da PUBLICAÇÃO
+  // --- MÉTODOS DE AVALIAÇÃO ---
 
   onPostarAvaliacao() {
     if (this.avaliacaoForm.invalid) {
@@ -107,9 +84,8 @@ export class PrestadorDetailComponent implements OnInit {
 
       this.avaliacaoService.atualizar(this.editandoAvaliacaoId, avaliacaoDTO).subscribe({
         next: () => {
-          alert('Avaliação atualizada com sucesso!');
-          this.avaliacaoForm.reset({ nota: 5 });
-          this.editandoAvaliacaoId = null; // Sai do modo de edição
+          this.mensagemSucesso = 'Avaliação atualizada com sucesso!';
+          this.cancelarEdicaoAvaliacao(); // Limpa o formulário e o estado
           this.refreshAvaliacoes.next();
         },
         error: (err) => {
@@ -117,10 +93,10 @@ export class PrestadorDetailComponent implements OnInit {
           alert('Erro ao atualizar. Verifique se você é o dono desta avaliação.');
         },
       });
-      return; // Para aqui
+      return;
     }
 
-    // LÓGICA DE CRIAÇÃO (CREATE) - (Seu código antigo continua aqui)
+    // LÓGICA DE CRIAÇÃO (CREATE)
     const avaliacaoDTO = {
       nota: this.avaliacaoForm.value.nota,
       comentario: this.avaliacaoForm.value.comentario,
@@ -134,21 +110,11 @@ export class PrestadorDetailComponent implements OnInit {
       },
       error: (err) => {
         console.error(err);
+        alert('Erro ao postar avaliação.');
       },
     });
   }
 
-  // Controla qual formulário de pub. está aberto
-  toggleAvaliacaoPublicacao(publicacaoId: number) {
-    if (this.publicacaoAbertaParaAvaliar === publicacaoId) {
-      this.publicacaoAbertaParaAvaliar = null;
-    } else {
-      this.publicacaoAbertaParaAvaliar = publicacaoId;
-      this.pubAvaliacaoForm.reset({ nota: 5 });
-    }
-  }
-
-  // Deletar avaliação
   onDeletarAvaliacao(avaliacaoId: number) {
     if (confirm('Tem certeza que deseja deletar esta avaliação?')) {
       this.avaliacaoService.deletar(avaliacaoId).subscribe({
@@ -157,28 +123,26 @@ export class PrestadorDetailComponent implements OnInit {
           this.refreshAvaliacoes.next();
         },
         error: (err) => {
-          /* ... (código de erro) ... */
+          console.error('Erro ao deletar avaliação', err);
+          alert('Erro: Você não tem permissão para deletar esta avaliação.');
         },
       });
     }
   }
 
-  // Carregar avaliação para editar
   onCarregarAvaliacaoParaEditar(avaliacao: AvaliacaoResponse) {
     this.editandoAvaliacaoId = avaliacao.id;
-    // Preenche o formulário com os dados existentes
     this.avaliacaoForm.patchValue({
       nota: avaliacao.nota,
       comentario: avaliacao.comentario,
     });
-    // Rola a tela até o formulário
     const formElement = document.querySelector('.form-container');
     if (formElement) formElement.scrollIntoView({ behavior: 'smooth' });
   }
 
-  // Cancelar edição da avaliação
   cancelarEdicaoAvaliacao() {
     this.editandoAvaliacaoId = null;
     this.avaliacaoForm.reset({ nota: 5 });
+    this.mensagemSucesso = '';
   }
 }

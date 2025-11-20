@@ -50,15 +50,18 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/prestadores").permitAll()
             // .requestMatchers(HttpMethod.POST, "/api/categorias").permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/publicacoes/prestador/**").permitAll()
+            
             
             // Liberação de rotas de LEITURA PÚBLICA (GET)
             .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/prestadores/**").permitAll() 
             .requestMatchers(HttpMethod.GET, "/api/clientes/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/prestadores/{prestadorId}/publicacoes").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/publicacoes/prestador/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/avaliacoes/prestador/{prestadorId}").permitAll()
             
+            // .requestMatchers("/api/avaliacoes/**").permitAll()
+            .requestMatchers("/api/avaliacoes/prestador/{prestadorId}").permitAll()
             .requestMatchers("/api/categorias/**").permitAll()
             // Liberação do H2 Console
             .requestMatchers("/h2-console/**").permitAll()
