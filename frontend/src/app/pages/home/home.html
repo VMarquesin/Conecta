@@ -47,30 +47,79 @@
 
   <div class="faq-carousel-wrapper">
     <button class="carousel-btn prev" (click)="scrollFaq('prev')">&lt;</button>
-    
+
     <div class="faq-carousel" #faqCarousel>
       <details class="faq-card">
         <summary>O que é o Conecta?</summary>
-        <p>Nosso objetivo é ser a ponte que conecta os moradores do bairro aos melhores profissionais, comerciantes e prestadores de serviço da região...</p>
+        <p>
+          Nosso objetivo é ser a ponte que conecta os moradores do bairro aos melhores
+          profissionais, comerciantes e prestadores de serviço da região...
+        </p>
       </details>
       <details class="faq-card">
         <summary>O uso da plataforma é gratuito?</summary>
-        <p>Para clientes (moradores): Sim! Buscar, visualizar perfis e contatar profissionais na plataforma é e sempre será 100% gratuito. Para profissionais: O cadastro básico...</p>
+        <p>
+          Para clientes (moradores): Sim! Buscar, visualizar perfis e contatar profissionais na
+          plataforma é e sempre será 100% gratuito. Para profissionais: O cadastro básico...
+        </p>
       </details>
       <details class="faq-card">
         <summary>Como sei se um profissional é de confiança?</summary>
-        <p>O Conecta funciona como uma vitrine de serviços locais. Você pode ver a opinião de outros moradores em nosso sistema de avaliações e comentários (reviews).</p>
+        <p>
+          O Conecta funciona como uma vitrine de serviços locais. Você pode ver a opinião de outros
+          moradores em nosso sistema de avaliações e comentários (reviews).
+        </p>
       </details>
       <details class="faq-card">
         <summary>Como faço para cadastrar meu negócio?</summary>
-        <p>É muito simples! Clique no link "Login" no menu superior, depois em "Cadastre-se" e selecione a opção "Quero Anunciar meu Serviço".</p>
+        <p>
+          É muito simples! Clique no link "Login" no menu superior, depois em "Cadastre-se" e
+          selecione a opção "Quero Anunciar meu Serviço".
+        </p>
       </details>
       <details class="faq-card">
         <summary>Como os clientes entrarão em contato?</summary>
-        <p>Ao criar seu perfil, você poderá adicionar suas informações públicas de contato (telefone, WhatsApp, etc.). Os clientes verão seu perfil e entrarão em contato diretamente com você.</p>
+        <p>
+          Ao criar seu perfil, você poderá adicionar suas informações públicas de contato (telefone,
+          WhatsApp, etc.). Os clientes verão seu perfil e entrarão em contato diretamente com você.
+        </p>
       </details>
     </div>
-    
+
     <button class="carousel-btn next" (click)="scrollFaq('next')">&gt;</button>
   </div>
 </section>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <h4>Conecta</h4>
+      <p class="muted">Conectando pessoas aos melhores profissionais locais.</p>
+    </div>
+
+    <div class="footer-links">
+      <h5>Explorar</h5>
+      <ul>
+        <li><a routerLink="/">Home</a></li>
+        <li><a routerLink="/categoria/Pedreiro">Pedreiros</a></li>
+        <li><a routerLink="/categoria/Pintor">Pintores</a></li>
+        <li><a routerLink="/login">Login</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-contact">
+      <h5>Contato</h5>
+      <p class="muted">Rua Aquela rua ali, 777 • Bairro Déjà vu</p>
+      <p class="muted">(11) 99999-9999 • contato@conecta.local</p>
+      <div class="socials">
+        <a href="#" aria-label="Instagram">@conecta_local</a>
+        <a href="#" aria-label="Facebook">fb.com/conecta</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <small
+      >© 2025 Conecta — Todos os direitos reservados • Criado com ♥ para a comunidade local</small
+    >
+  </div>
+</footer>
