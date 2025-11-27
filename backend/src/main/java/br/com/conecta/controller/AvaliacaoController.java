@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/avaliacoes") // Rota base correta
+@RequestMapping("/api/avaliacoes") // Rota base
 public class AvaliacaoController {
 
     @Autowired
@@ -21,12 +21,10 @@ public class AvaliacaoController {
     /**
      * Rota: POST /api/avaliacoes/prestador/{prestadorId}
      */
-    @PostMapping("/prestador/{prestadorId}")
+    @PostMapping("/prestador/{prestadorId}") 
     public ResponseEntity<Avaliacao> criarParaPrestador(
             @PathVariable Integer prestadorId, 
             @RequestBody AvaliacaoDTO avaliacaoDTO) {
-        
-        // Correção: Chamando o método 'criarParaPrestador' (como no seu service)
         Avaliacao novaAvaliacao = avaliacaoService.criarParaPrestador(prestadorId, avaliacaoDTO);
         return ResponseEntity.ok(novaAvaliacao);
     }
@@ -61,8 +59,6 @@ public class AvaliacaoController {
     public ResponseEntity<Avaliacao> atualizar(
             @PathVariable Integer avaliacaoId,
             @RequestBody AvaliacaoDTO avaliacaoDTO) {
-        
-        // CORREÇÃO: Chamamos o serviço sem passar o prestadorId
         Avaliacao avaliacaoAtualizada = avaliacaoService.atualizar(avaliacaoId, avaliacaoDTO);
         return ResponseEntity.ok(avaliacaoAtualizada);
     }

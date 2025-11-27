@@ -34,10 +34,10 @@ public class JwtTokenService {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpiration);
 
-        // 3. Pega a lista de "papéis" (ex: "ROLE_CLIENTE") do UserDetails
+        // Pega a lista de "papéis" (ex: "ROLE_CLIENTE") do UserDetails
         String roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(",")); // Converte para uma string, ex: "ROLE_CLIENTE,ROLE_ADMIN"
+                .collect(Collectors.joining(","));
 
         return Jwts.builder()
                 .subject(userDetails.getUsername())

@@ -39,21 +39,17 @@ public class AvaliacaoService {
 
     @Transactional
     public Avaliacao criarParaPrestador(Integer prestadorId, AvaliacaoDTO avaliacaoDTO) {
-        
-        // 2. DESCOBRIR O USUÁRIO LOGADO
-        // Pega a autenticação do "contexto de segurança" (que o nosso filtro JWT preencheu)
+    
+        // Pega a autenticação do "contexto de segurança" (do filtro JWT preencheu)
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String emailDoUsuarioLogado = authentication.getName(); // Isso nos dá o email
+        String emailDoUsuarioLogado = authentication.getName();
 
         if (avaliacaoRepository.existsByPrestadorIdAndClienteEmail(prestadorId, emailDoUsuarioLogado)){
             throw new RuntimeException("Você já avaliou este prestador. Edite sua avaliação anterior.");
         }
-        // 3. BUSCAR O CLIENTE PELO EMAIL
-        // (Não podemos mais confiar no clienteId que vem do DTO)
+        // BUSCAR O CLIENTE PELO EMAIL
         Cliente cliente = clienteRepository.findByEmail(emailDoUsuarioLogado)
                 .orElseThrow(() -> new UsernameNotFoundException("Cliente não encontrado com o email: " + emailDoUsuarioLogado));
-
-        // --- O resto da lógica é o mesmo ---
         Prestador prestador = prestadorRepository.findById(prestadorId)
                 .orElseThrow(() -> new RuntimeException("Prestador não encontrado"));
 
@@ -61,7 +57,7 @@ public class AvaliacaoService {
         avaliacao.setNota(avaliacaoDTO.getNota());
         avaliacao.setComentario(avaliacaoDTO.getComentario());
         avaliacao.setPrestador(prestador);
-        avaliacao.setCliente(cliente); // 4. Usa o cliente que buscamos pelo token
+        avaliacao.setCliente(cliente); // Usa o cliente que buscamos pelo token
 
         return avaliacaoRepository.save(avaliacao);
     }
@@ -85,14 +81,11 @@ public class AvaliacaoService {
             // VINCULA À PUBLICAÇÃO
             avaliacao.setPublicacao(publicacao); 
             
-            // IMPORTANTE: VINCULA TAMBÉM AO PRESTADOR (DONO DA PUBLICAÇÃO)
-            // Isso garante que o dado fique consistente no banco
+            // VINCULA TAMBÉM AO PRESTADOR (DONO DA PUBLICAÇÃO)
             avaliacao.setPrestador(publicacao.getPrestador()); 
             
             return avaliacaoRepository.save(avaliacao);
     }
-
-    // Dentro da classe AvaliacaoService.java
 
     @Transactional
     public Avaliacao atualizar(Integer avaliacaoId, AvaliacaoDTO avaliacaoDTO) {
@@ -131,9 +124,6 @@ public class AvaliacaoService {
     @Transactional(readOnly = true)
     public List<AvaliacaoResponseDTO> listarPorPrestador(Integer prestadorId) {
         List<Avaliacao> avaliacoes = avaliacaoRepository.findByPrestadorId(prestadorId);
-
-        // 2. Converte a lista de Entidades para uma lista de DTOs
-        // A conversão acontece aqui, com a transação ainda aberta.
         return avaliacoes.stream()
                 .map(AvaliacaoResponseDTO::new)
                 .collect(Collectors.toList());
