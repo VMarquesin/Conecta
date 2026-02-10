@@ -29,12 +29,10 @@ public class Avaliacao {
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
-    // DEVE ESTAR NULLABLE = TRUE
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "prestador_id", nullable = true) 
     private Prestador prestador;
 
-    // NOVO CAMPO
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "publicacao_id", nullable = true)
     @JsonIgnore
