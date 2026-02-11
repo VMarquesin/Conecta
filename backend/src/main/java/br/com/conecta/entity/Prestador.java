@@ -1,78 +1,82 @@
 package br.com.conecta.entity;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import java.time.LocalDateTime;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.HashSet; 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "prestadores")
 public class Prestador {
 
+    // A chave primária é compartilhada com Usuario (Herança de ID)
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long usuarioId;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @MapsId // Isso diz: "Meu ID é igual ao ID do Usuario vinculado"
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
 
     @Column(nullable = false)
-    private String nomeCompleto; 
+    private String nomeFantasia; 
 
-    private String nomeFantasia;
+    // O antigo "cpf" agora é genérico para aceitar CNPJ também
+    @Column(nullable = false, length = 20)
+    private String documento; 
 
-    @Column(unique = true, nullable = false)
-    private String email;
+    @Column(name = "foto_documento_url")
+    private String fotoDocumentoUrl; // Para validação do Admin
 
-    @JsonIgnore
-    @Column(nullable = false)
-    private String senhaHash;
+    // Substituímos a tabela extra de telefones por um campo direto (Regra de Negócio: WhatsApp é o que importa)
+    @Column(name = "telefone_whatsapp", nullable = false, length = 20)
+    private String telefoneWhatsapp;
 
     @Column(columnDefinition = "TEXT")
     private String bio;
 
+    @Column(name = "foto_perfil_url")
     private String fotoPerfilUrl;
 
-    @Column(unique = true, length = 14)
-    private String cpf;
+    // --- Campos de Gestão (Novos) ---
+    @Column(name = "plano_assinatura", length = 20)
+    private String planoAssinatura = "GRATIS"; 
 
-    @CreationTimestamp // Hibernate: preenche a data/hora no momento da criação
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime dataCadastro;
+    private Boolean verificado = false;
 
+    @Column(name = "status_disponibilidade", length = 20)
+    private String statusDisponibilidade = "DISPONIVEL";
+
+    // --- Relacionamentos Mantidos ---
+
+    // Mantivemos suas Publicações
     @OneToMany(mappedBy = "prestador", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Publicacao> publicacoes = new HashSet<>();
-    
-    @OneToMany(mappedBy = "prestador", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Telefone> telefones = new HashSet<>();
 
-    @ManyToMany(   
-        fetch = FetchType.LAZY,
-        cascade = { CascadeType.PERSIST, CascadeType.MERGE 
-        })
-
+    // Mantivemos suas Categorias
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-        name = "prestador_categorias", 
-        joinColumns = @JoinColumn(name = "prestador_id"), 
-        inverseJoinColumns = @JoinColumn(name = "categoria_id") 
+        name = "prestador_categorias",
+        joinColumns = @JoinColumn(name = "prestador_id"),
+        inverseJoinColumns = @JoinColumn(name = "categoria_id")
     )
     private Set<Categoria> categorias = new HashSet<>();
 
     // --- Getters e Setters ---
 
-    public Integer getId() {
-        return id;
+    public Long getUsuarioId() {
+        return usuarioId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
     }
 
-    public String getNomeCompleto() {
-        return nomeCompleto;
+    public Usuario getUsuario() {
+        return usuario;
     }
 
-    public void setNomeCompleto(String nomeCompleto) {
-        this.nomeCompleto = nomeCompleto;
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public String getNomeFantasia() {
@@ -83,28 +87,28 @@ public class Prestador {
         this.nomeFantasia = nomeFantasia;
     }
 
-    public String getEmail() {
-        return email;
+    public String getDocumento() {
+        return documento;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setDocumento(String documento) {
+        this.documento = documento;
     }
 
-    public Set<Telefone> getTelefones() {
-        return telefones;
+    public String getFotoDocumentoUrl() {
+        return fotoDocumentoUrl;
     }
 
-    public void setTelefones(Set<Telefone> telefones) {
-        this.telefones = telefones;
+    public void setFotoDocumentoUrl(String fotoDocumentoUrl) {
+        this.fotoDocumentoUrl = fotoDocumentoUrl;
     }
 
-    public String getSenhaHash() {
-        return senhaHash;
+    public String getTelefoneWhatsapp() {
+        return telefoneWhatsapp;
     }
 
-    public void setSenhaHash(String senhaHash) {
-        this.senhaHash = senhaHash;
+    public void setTelefoneWhatsapp(String telefoneWhatsapp) {
+        this.telefoneWhatsapp = telefoneWhatsapp;
     }
 
     public String getBio() {
@@ -123,28 +127,38 @@ public class Prestador {
         this.fotoPerfilUrl = fotoPerfilUrl;
     }
 
-    public String getCpf() {
-        return cpf;
+    public String getPlanoAssinatura() {
+        return planoAssinatura;
     }
 
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
+    public void setPlanoAssinatura(String planoAssinatura) {
+        this.planoAssinatura = planoAssinatura;
     }
 
-    public LocalDateTime getDataCadastro() {
-        return dataCadastro;
+    public Boolean getVerificado() {
+        return verificado;
     }
 
-    public void setDataCadastro(LocalDateTime dataCadastro) {
-        this.dataCadastro = dataCadastro;
+    public void setVerificado(Boolean verificado) {
+        this.verificado = verificado;
     }
 
-     public Set<Publicacao> getPublicacoes() {
+    public String getStatusDisponibilidade() {
+        return statusDisponibilidade;
+    }
+
+    public void setStatusDisponibilidade(String statusDisponibilidade) {
+        this.statusDisponibilidade = statusDisponibilidade;
+    }
+
+    public Set<Publicacao> getPublicacoes() {
         return publicacoes;
     }
+
     public void setPublicacoes(Set<Publicacao> publicacoes) {
         this.publicacoes = publicacoes;
     }
+
     public Set<Categoria> getCategorias() {
         return categorias;
     }
@@ -152,34 +166,10 @@ public class Prestador {
     public void setCategorias(Set<Categoria> categorias) {
         this.categorias = categorias;
     }
-
+    
+    // Método auxiliar para adicionar categoria
     public void addCategoria(Categoria categoria) {
         this.categorias.add(categoria);
         categoria.getPrestadores().add(this);
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Prestador other = (Prestador) obj;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
-        return true;
     }
 }
