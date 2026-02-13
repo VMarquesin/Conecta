@@ -1,73 +1,105 @@
 package br.com.conecta.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
-
-import java.util.Set;
-import java.util.HashSet;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
-@Table(name = "publicacoes")
+@Table(name = "portfolio_items") // Nome mais profissional no banco
 public class Publicacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(nullable = false)
     private String titulo;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String descricao;
 
-    private String fotoUrl;
+    @Column(name = "imagem_url", nullable = false)
+    private String imagemUrl;
 
     @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime dataPublicacao;
+    @Column(name = "data_criacao", updatable = false)
+    private LocalDateTime dataCriacao;
 
+    // Quem postou?
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "prestador_id", nullable = false)
-    @JsonIgnore
     private Prestador prestador;
 
-    @OneToMany(mappedBy = "publicacao", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Avaliacao> avaliacoes = new HashSet<>();
+    // --- CAMPOS PREPARADOS PARA IA (FETEPS) ---
+    @Column(name = "tags_ia", columnDefinition = "TEXT")
+    private String tagsIa; 
 
-    // Getters e Setters
-    public Set<Avaliacao> getAvaliacoes() {
-        return avaliacoes;
-    }
-    public void setAvaliacoes(Set<Avaliacao> avaliacoes) {
-        this.avaliacoes = avaliacoes;
-    }
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
-    public String getTitulo() { return titulo; }
-    public void setTitulo(String titulo) { this.titulo = titulo; }
-    public String getDescricao() { return descricao; }
-    public void setDescricao(String descricao) { this.descricao = descricao; }
-    public String getFotoUrl() { return fotoUrl; }
-    public void setFotoUrl(String fotoUrl) { this.fotoUrl = fotoUrl; }
-    public LocalDateTime getDataPublicacao() { return dataPublicacao; }
-    public void setDataPublicacao(LocalDateTime dataPublicacao) { this.dataPublicacao = dataPublicacao; }
-    public Prestador getPrestador() { return prestador; }
-    public void setPrestador(Prestador prestador) { this.prestador = prestador; }
+    @Column(name = "analise_ia_json", columnDefinition = "TEXT")
+    private String analiseIaJson; 
 
-    // equals() e hashCode()
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Publicacao that = (Publicacao) o;
-        return Objects.equals(id, that.id);
+    // --- Getters e Setters ---
+
+    public Long getId() {
+        return id;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public String getImagemUrl() {
+        return imagemUrl;
+    }
+
+    public void setImagemUrl(String imagemUrl) {
+        this.imagemUrl = imagemUrl;
+    }
+
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
+
+    public Prestador getPrestador() {
+        return prestador;
+    }
+
+    public void setPrestador(Prestador prestador) {
+        this.prestador = prestador;
+    }
+
+    public String getTagsIa() {
+        return tagsIa;
+    }
+
+    public void setTagsIa(String tagsIa) {
+        this.tagsIa = tagsIa;
+    }
+
+    public String getAnaliseIaJson() {
+        return analiseIaJson;
+    }
+
+    public void setAnaliseIaJson(String analiseIaJson) {
+        this.analiseIaJson = analiseIaJson;
     }
 }

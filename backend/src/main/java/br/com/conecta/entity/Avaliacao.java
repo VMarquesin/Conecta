@@ -2,10 +2,7 @@ package br.com.conecta.entity;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
 @Table(name = "avaliacoes")
@@ -13,54 +10,48 @@ public class Avaliacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(nullable = false)
-    private int nota;
+    private Integer nota; // 1 a 5
 
     @Column(columnDefinition = "TEXT")
     private String comentario;
 
     @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime dataAvaliacao;
+    @Column(name = "data_criacao", updatable = false)
+    private LocalDateTime dataCriacao;
 
+    // Quem fez a avaliação?
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
+    // Quem recebeu a avaliação?
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "prestador_id", nullable = true) 
+    @JoinColumn(name = "prestador_id", nullable = false)
     private Prestador prestador;
 
+    // (Opcional) Se a avaliação for sobre uma foto específica
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "publicacao_id", nullable = true)
-    @JsonIgnore
+    @JoinColumn(name = "portfolio_item_id")
     private Publicacao publicacao;
 
-    // Getters e Setters
+    // --- Getters e Setters ---
 
-    public Publicacao getPublicacao() {
-        return publicacao;
-    }
-    
-    public void setPublicacao(Publicacao publicacao) {
-        this.publicacao = publicacao;
-    }
-
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public int getNota() {
+    public Integer getNota() {
         return nota;
     }
 
-    public void setNota(int nota) {
+    public void setNota(Integer nota) {
         this.nota = nota;
     }
 
@@ -72,20 +63,12 @@ public class Avaliacao {
         this.comentario = comentario;
     }
 
-    public LocalDateTime getDataAvaliacao() {
-        return dataAvaliacao;
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
     }
 
-    public void setDataAvaliacao(LocalDateTime dataAvaliacao) {
-        this.dataAvaliacao = dataAvaliacao;
-    }
-
-    public Prestador getPrestador() {
-        return prestador;
-    }
-
-    public void setPrestador(Prestador prestador) {
-        this.prestador = prestador;
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
     }
 
     public Cliente getCliente() {
@@ -96,17 +79,19 @@ public class Avaliacao {
         this.cliente = cliente;
     }
 
-    // equals() e hashCode()
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Avaliacao avaliacao = (Avaliacao) o;
-        return Objects.equals(id, avaliacao.id);
+    public Prestador getPrestador() {
+        return prestador;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    public void setPrestador(Prestador prestador) {
+        this.prestador = prestador;
+    }
+
+    public Publicacao getPublicacao() {
+        return publicacao;
+    }
+
+    public void setPublicacao(Publicacao publicacao) {
+        this.publicacao = publicacao;
     }
 }
